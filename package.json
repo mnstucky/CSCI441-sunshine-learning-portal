@@ -1,0 +1,26 @@
+{
+  "name": "csci441-sunshine-learning-portal",
+  "version": "1.0.0",
+  "description": "Sunshine Learning Portal for CSCI441: Software Engineering",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mnstucky/CSCI441-sunshine-learning-portal.git"
+  },
+  "author": "Matthew Stucky, Ricardo Rodriguez, Taylor Pressley, Danielle Pippitt, and Daryl Pemberton",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mnstucky/CSCI441-sunshine-learning-portal/issues"
+  },
+  "homepage": "https://github.com/mnstucky/CSCI441-sunshine-learning-portal#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
