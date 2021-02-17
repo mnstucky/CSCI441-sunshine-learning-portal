@@ -33,33 +33,41 @@ GitHub and git are different. GitHub is a place online to store and collaborate 
 
 **If the conflict involves changes to package.json, package_lock.json, or anything in the node_modules folder (or just generally stuff you don't recognize), please flag the issue in the Discord. Tag @stupub.**
 
-3. Code away on your local copy of the project using your favorite text editor. When you reach a good stopping point (i.e., you've implemented a logical chunk of a new feature, fixed a bug, etc.), it's time to commit your changes and then upload them to GitHub. Two recommendations:
+3. Update any dependencies added to the project since you last pulled down a local copy:
+
+```npm install```
+
+4. Start the development server so you can see the site live in a browser at the address localhost:3000:
+
+``npm run dev``
+
+5. Code away on your local copy of the project using your favorite text editor. When you reach a good stopping point (i.e., you've implemented a logical chunk of a new feature, fixed a bug, etc.), it's time to commit your changes and then upload them to GitHub. Two recommendations:
 
     a. Don't commit a broken version of the project. Go to localhost:3000 *before* you commit anything to make sure the website still works.
 
     b. Commit often. Rather than waiting until you've implemented a massive feature, commit as you make incremental progress.
 
-4. Check to see what you want/need to commit with
+6. Check to see what you want/need to commit with
 
 ```git status```
 
-5. Git will display a list of files. The "untracked files" (in red) aren't ready to be committed. Add the files you want to commit with:
+7. Git will display a list of files. The "untracked files" (in red) aren't ready to be committed. Add the files you want to commit with:
 
 ```git add [filename]```
 
-6. Check to make sure you've successfully added the files you want (the files to be committed will now be in green; if they're still in red, you missed something in the last step):
+8. Check to make sure you've successfully added the files you want (the files to be committed will now be in green; if they're still in red, you missed something in the last step):
 
 ```git status```
 
-7. If you're happy with the files you've added, create a commit. The "commit message" is just a description of what you've changed. Be as descriptive as possible:
+9. If you're happy with the files you've added, create a commit. The "commit message" is just a description of what you've changed. Be as descriptive as possible:
 
 ```git commit -m [commit message]```
 
-9. Upload your committed changes to GitHub:
+10. Upload your committed changes to GitHub:
 
 ```git push origin main```
 
-10. If your changes conflict with what's on GitHub, you'll get an error like "Updates were rejected..." Do this:
+11. If your changes conflict with what's on GitHub, you'll get an error like "Updates were rejected..." Do this:
 
     a. Run the command:
 
@@ -83,6 +91,6 @@ GitHub and git are different. GitHub is a place online to store and collaborate 
 
     ```git push origin main```
 
-11. (Optional) Want to see what our team's "commit history" looks like? Try:
+12. (Optional) Want to see what our team's "commit history" looks like? Try:
 
 ```git log --all --graph --decorate```
