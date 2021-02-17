@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -24,5 +25,8 @@
   "devDependencies": {
     "nodemon": "^2.0.7",
     "prettier": "^2.2.1"
+  },
+  "engines": {
+    "node": "14.x"
   }
 }
