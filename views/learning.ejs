@@ -6,9 +6,112 @@
   </head>
   <body>
     <%- include('./partials/header.ejs') %>
+
     <main class="container">
-      <h1 class="text-center">Learning Tracks</h1>
+      <h1 class="text-center">My Learning</h1>
+
+      <!-- All In-Process/Completed Learning Tracks -->
+      <div class="row border border-dark my-2">
+        <h4 id="centerText">My Learning Tracks</h4>
+        <div class="col-sm">
+          <div class="row border border-dark mx-1 my-0">
+            <div class="col-8">
+              <p>Learning Track</p>
+            </div>
+            <div class="col-3">
+              <p>In-Process</p>
+            </div>
+          </div>
+          <div class="row border border-dark mx-1 my-0">
+            <div class="col-8">
+              <p>Learning Track 1</p>
+            </div>
+            <div class="col-3">
+              <p>Completed</p>
+            </div>
+          </div>
+          <div class="row border border-dark mx-1 my-0">
+            <div class="col-8">
+              <p>Learning Track 2</p>
+            </div>
+            <div class="col-3">
+              <p>Completed</p>
+            </div>
+          </div>
+          <div class="row border border-dark mx-1 mb-1">
+            <div class="col-8">
+              <p>Learning Track 3</p>
+            </div>
+            <div class="col-3">
+              <p>Completed</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Available Learning Tracks -->
+      <div class="row border border-dark my-2">
+        <h4 id="centerText">Available Learning Tracks</h4>
+        <div class="col-sm">
+          <p class="row border border-dark mx-1 my-0 p-2">Available Learning Track 1</p>
+          <p class="row border border-dark mx-1 my-0 p-2">Available Learning Track 2</p>
+          <p class="row border border-dark mx-1 my-0 p-2">Available Learning Track 3</p>
+          <p class="row border border-dark mx-1 mb-1 p-2">Available Learning Track 4</p>
+        </div>
+      </div>
+
+      <!-- Assessment Results -->
+      <div class="row border border-dark my-2">
+        <h4 id="centerText">My Assessment Results</h4>
+        <div class="col-sm">
+          <div class="row border border-dark mx-1 my-0">
+            <div class="col-8">
+              <p>Assessment Results 1</p>
+            </div>
+            <div class="col-3">
+              <p>Score</p>
+            </div>
+          </div>
+          <div class="row border border-dark mx-1 my-0">
+            <div class="col-8">
+              <p>Assessment Results 2</p>
+            </div>
+            <div class="col-3">
+              <p>Score</p>
+            </div>
+          </div>
+          <div class="row border border-dark mx-1 my-0">
+            <div class="col-8">
+              <p>Assessment Results 3</p>
+            </div>
+            <div class="col-3">
+              <p>Score</p>
+            </div>
+          </div>
+          <div class="row border border-dark mx-1 mb-1">
+            <div class="col-8">
+              <p>Assessment Results 4</p>
+            </div>
+            <div class="col-3">
+              <p>Score</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Resources -->
+      <div class="row border border-dark my-2">
+        <h4 id="centerText">Additional Resources</h4>
+        <div class="col-sm">
+          <p class="row border border-dark mx-1 my-0 p-2"><a href="https://www.khanacademy.org/math/cc-fifth-grade-math">Khan Academy</a></p>
+          <p class="row border border-dark mx-1 my-0 p-2"><a href="">Additional Resource</a></p>
+          <p class="row border border-dark mx-1 my-0 p-2"><a href="">Additional Resource</a></p>
+          <p class="row border border-dark mx-1 mb-1 p-2"><a href="">Additional Resource</a></p>
+        </div>
+      </div>
+
     </main>
+
     <%- include('./partials/footer.ejs') %>
   </body>
 </html>

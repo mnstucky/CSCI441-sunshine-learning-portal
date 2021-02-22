@@ -38,6 +38,10 @@ app.get("/profile/", (req, res) => {
     res.render(`${__dirname}/views/profile`);
 })
 
+app.get("/login/", (req, res) => {
+	res.render(`${__dirname}/views/login`);
+})
+
 // Start server
 
 app.listen(port, () => 

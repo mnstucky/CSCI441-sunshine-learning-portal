@@ -1,7 +1,7 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">Sunshine Learning Portal</a>
+        <a class="navbar-brand" href="/">Sunshine Learning Portal</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -18,6 +18,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/">Home</a>
             </li>
+
             <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"
@@ -36,12 +37,27 @@
                   >
                 </li>
                 <li>
-                  <a class="dropdown-item" href="/discussions/"
-                    >Discussions</a
-                  >
-                </li>
-                <li>
                   <a class="dropdown-item" href="/leaders/">Leaderboards</a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Discussions
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li>
+                  <a class="dropdown-item" href="/discussions/"
+                    >Student Discussions</a
+                  >
                 </li>
                 <li>
                   <a class="dropdown-item" href="/contact/"
@@ -50,10 +66,12 @@
                 </li>
               </ul>
             </li>
+
             <li class="nav-item">
-              <a class="nav-link" href="/profile/">Profile</a>
+              <a class="nav-link" href="/login/">Sign In</a>
             </li>
           </ul>
+
           <form class="d-flex">
             <input
               class="form-control me-2"

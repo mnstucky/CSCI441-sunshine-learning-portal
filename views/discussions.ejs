@@ -6,9 +6,81 @@
   </head>
   <body>
     <%- include('./partials/header.ejs') %>
+
     <main class="container">
       <h1 class="text-center">Discussion Board</h1>
+
+      <form class="d-flex">
+        <input
+          class="form-control me-2"
+          type="search"
+          placeholder="Search"
+          aria-label="Search"
+        />
+        <button class="btn btn-outline-success" type="submit">
+          Search
+        </button>
+      </form>
+
+      <div class="row" id="centerText">
+        <div class="col-sm col-md-6 col-lg-4 my-4">
+          <input type="submit" class="btn btn-primary" value="Create Thread"><br>
+        </div>
+        <div class="col-sm col-md-6 col-lg-4 my-4">
+          <input type="submit" class="btn btn-primary" value="Subscribe"><br>
+        </div>
+      </div>
+
+      <!-- Discussion Threads -->
+      <div class="tableHeading table-responsive table-sm">
+        <table class="table table-hover table-striped mb-4">
+            <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Thread</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Unread Posts</th>
+                    <th scope="col">Unread Replies to Me</th>
+                    <th scope="col">Total Posts</th>
+                </tr>
+            </thead>
+            <tbody>
+              <tr>
+                  <td>Date</td>
+                  <td>Thread Title</td>
+                  <td>Author</td>
+                  <td>Status</td>
+                  <td>Number</td>
+                  <td>Number</td>
+                  <td>Number</td>
+              </tr>
+              <tr>
+                <td>Date</td>
+                  <td>Thread Title</td>
+                  <td>Author</td>
+                  <td>Status</td>
+                  <td>Number</td>
+                  <td>Number</td>
+                  <td>Number</td>
+            </tr>
+            <tr>
+              <td>Date</td>
+                  <td>Thread Title</td>
+                  <td>Author</td>
+                  <td>Status</td>
+                  <td>Number</td>
+                  <td>Number</td>
+                  <td>Number</td>
+          </tr>
+            </tbody>
+        </table>
+      </div>
+
+
+
     </main>
+
     <%- include('./partials/footer.ejs') %>
   </body>
 </html>

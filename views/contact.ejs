@@ -6,9 +6,45 @@
   </head>
   <body>
     <%- include('./partials/header.ejs') %>
+
     <main class="container">
-      <h1 class="text-center">Contact Teacher</h1>
+      <h1 class="text-center">Contact My Teacher</h1>
+    
+      <h3>Select a Topic:</h3>
+
+      <div class="row g-3">
+        <div class="btn-group" role="group">
+            <input type="radio" class="btn-check" name="btnradio" id="btnGrading" autocomplete="off">
+            <label class="btn btn-outline-primary" for="btnGrading">Grading</label>
+            <input type="radio" class="btn-check" name="btnradio" id="btnConference" autocomplete="off">
+            <label class="btn btn-outline-primary" for="btnConference">Conference</label>
+            <input type="radio" class="btn-check" name="btnradio" id="btnHomework" autocomplete="off">
+            <label class="btn btn-outline-primary" for="btnHomework">Homework</label>
+        </div>  
+        <div class="btn-group" role="group">
+            <input type="radio" class="btn-check" name="btnradio" id="btnPersonal" autocomplete="off">
+            <label class="btn btn-outline-primary" for="btnPersonal">Personal</label>
+            <input type="radio" class="btn-check" name="btnradio" id="btnFeedback" autocomplete="off">
+            <label class="btn btn-outline-primary" for="btnFeedback">Feedback</label>
+            <input type="radio" class="btn-check" name="btnradio" id="btnOther" autocomplete="off">
+            <label class="btn btn-outline-primary" for="btnOther">Other</label>
+        </div>
+      </div>
+
+      <div class="form-group ">
+        <label for="myQuestion" class="form-label mt-4">Explain what you need help with or what your specific question is.</label>
+        <textarea class="form-control" id="myQuestion" name="myQuestion" rows="3"></textarea>
+      </div>
+
+      
+      <div class="row" id="centerText">
+        <div class="col-sm col-md-6 col-lg-4 mx-auto my-4">
+          <input type="submit" class="btn btn-primary" value="Get Help"><br>
+        </div>
+      </div>
+
     </main>
+
     <%- include('./partials/footer.ejs') %>
   </body>
 </html>
