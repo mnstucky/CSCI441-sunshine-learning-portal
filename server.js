@@ -1,6 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
+const session = require("express-session");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const bcrypt = require("bcrypt");
 const port = process.env.PORT || 3000;
 
 // Apply middleware
