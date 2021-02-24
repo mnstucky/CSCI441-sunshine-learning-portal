@@ -10,6 +10,8 @@
 
     <main class="container">
       <h1 class="text-center">Sign In</h1>
+      <!-- The errorMessage contains a value set by the authentication logic if login fails -->
+      <p class="text-center"><%- errorMessage %></p>
       <form action="/login/" method="post">
 
         <div class="row" id="centerText">

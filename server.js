@@ -13,6 +13,7 @@ const session = require("express-session");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const bcrypt = require("bcrypt");
+const flash = require('connect-flash');
 
 // Load database services
 const { Pool, Client } = require("pg");
@@ -39,6 +40,7 @@ app.use(
     cookie: { secure: false },
   })
 );
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(
@@ -47,22 +49,21 @@ passport.use(
     const values = [username];
     pool.query(text, values, (err, user) => {
       console.log(`User ${username} attempted to log in.`);
-      console.log(user);
       if (err) {
         return done(err);
       }
       if (user.rows.length === 0) {
-        return done(null, false);
+        return done(null, false, { message: "Incorrect username." });
       }
       if (!bcrypt.compareSync(password, user.rows[0].password)) {
-        // This logic is working...
-        return done(null, false);
+        return done(null, false, { message: "Incorrect password." });
       }
       return done(null, user.rows[0]);
     });
   })
 );
 
+// Define middleware to redirect pages to login if no-one is logged in
 function loggedIn(req, res, next) {
   if (req.user) {
     next();
@@ -72,26 +73,28 @@ function loggedIn(req, res, next) {
 }
 
 // Set templating engine to EJS
-
 app.set("view engine", "ejs");
 
 // Define routes
 
 app.route("/").get(loggedIn, (req, res) => {
-  res.render(`${__dirname}/views/profile`);
+  res.render(`${__dirname}/views/profile`, { username: req.user.rows[0].username }); // TODO: Clean up user object
 });
 
 app.route("/profile/").get(loggedIn, (req, res) => {
-  res.render(`${__dirname}/views/profile`);
+  console.log(req.user);
+    res.render(`${__dirname}/views/profile`, { username: req.user.rows[0].username });
 });
 
 app.get("/login/", (req, res) => {
-  res.render(`${__dirname}/views/login`);
+  res.render(`${__dirname}/views/login`, { username: "" , errorMessage: req.flash('error')});
 });
 
+// Handle sign in form submissions
 app.route("/login/").post(
   passport.authenticate("local", {
     failureRedirect: "/login/",
+    failureFlash: true
   }),
   (req, res) => {
     res.redirect("/profile/");
@@ -99,19 +102,19 @@ app.route("/login/").post(
 );
 
 app.route("/contact/").get(loggedIn, (req, res) => {
-  res.render(`${__dirname}/views/contact`);
+  res.render(`${__dirname}/views/contact`, { username: req.user.rows[0].username });
 });
 
 app.route("/discussions/").get(loggedIn, (req, res) => {
-  res.render(`${__dirname}/views/discussions`);
+  res.render(`${__dirname}/views/discussions`, { username: req.user.rows[0].username });
 });
 
 app.route("/leaders/").get(loggedIn, (req, res) => {
-  res.render(`${__dirname}/views/leaders`);
+  res.render(`${__dirname}/views/leaders`, { username: req.user.rows[0].username });
 });
 
 app.route("/learning/").get(loggedIn, (req, res) => {
-  res.render(`${__dirname}/views/learning`);
+  res.render(`${__dirname}/views/learning`, { username: req.user.rows[0].username });
 });
 
 app.route("/logout/").get((req, res) => {
@@ -119,10 +122,10 @@ app.route("/logout/").get((req, res) => {
   res.redirect("/");
 });
 
+// Store user sessions as cookies
 passport.serializeUser((user, done) => {
   done(null, user.username);
 });
-
 passport.deserializeUser((username, done) => {
   const text = "SELECT * FROM logins WHERE username = $1";
   const values = [username];
@@ -132,5 +135,4 @@ passport.deserializeUser((username, done) => {
 });
 
 // Start server
-
 app.listen(port, () => console.log(`App listening on port ${port}.`));
