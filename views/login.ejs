@@ -7,37 +7,60 @@
 
   <body>
     <%- include('./partials/header.ejs') %>
-    
+
     <main class="container">
       <h1 class="text-center">Sign In</h1>
+      <form action="/login/" method="post">
 
-      <div class="row" id="centerText">
-        <div class="col-sm col-md-6 col-lg-4 mx-auto my-2">
-          <input type="username" class="form-control" id="myUsername" placeholder="Username">
-        </div>
-      </div>
-
-      <div class="row" id="centerText">
-        <div class="col-sm col-md-6 col-lg-4 mx-auto my-2">
-          <input type="password" class="form-control" id="myPassword" placeholder="Password">
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-sm col-md-6 col-lg-4 mx-auto my-2">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-            <label class="form-check-label" for="flexCheckDefault">Remember Username</label>
+        <div class="row" id="centerText">
+          <div class="col-sm col-md-6 col-lg-4 mx-auto my-2">
+            <input
+              type="text"
+              class="form-control"
+              name="username"
+              placeholder="Username"
+            />
           </div>
         </div>
-      </div>
 
-      <div class="row" id="centerText">
-        <div class="col-sm col-md-6 col-lg-4 mx-auto my-2">
-          <input type="submit" class="btn btn-primary mb-2" value="Login"><br>
+        <div class="row" id="centerText">
+          <div class="col-sm col-md-6 col-lg-4 mx-auto my-2">
+            <input
+              type="password"
+              class="form-control"
+              name="password"
+              placeholder="Password"
+            />
+          </div>
         </div>
-      </div>
 
+        <div class="row">
+          <div class="col-sm col-md-6 col-lg-4 mx-auto my-2">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="flexCheckDefault"
+              />
+              <label class="form-check-label" for="flexCheckDefault"
+                >Remember Username</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="row" id="centerText">
+          <div class="col-sm col-md-6 col-lg-4 mx-auto my-2">
+            <input
+              type="submit"
+              class="btn btn-primary mb-2"
+              value="Login"
+            /><br />
+          </div>
+        </div>
+
+      </form>
     </main>
 
     <%- include('./partials/footer.ejs') %>
