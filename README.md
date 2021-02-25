@@ -15,11 +15,13 @@ To get started:
 
 ``` npm install ```
 
-5. Again in the repository's local directory, run the command, 
+5. For the authentication layer to run correctly, you must have the proper .env file in the top-level directory. The contents of the .env file aren't on Github. Contact @stupub for credentials.
+
+6. Again in the repository's local directory, run the command, 
 
 ```npm run dev``` 
 
-6. The development server should be live. Navigate to localhost:3000 in a browser to confirm. The server will restart every time you make changes to the project's code (you'll still need to refresh your browser to see any changes).
+7. The development server should be live. Navigate to localhost:3000 in a browser to confirm. The server will restart every time you make changes to the project's code (you'll still need to refresh your browser to see any changes). 
 
 ## Development Workflow
 
