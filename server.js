@@ -16,7 +16,7 @@ const bcrypt = require("bcrypt");
 const flash = require('connect-flash');
 
 // Load database services
-const { Pool, Client } = require("pg");
+const { Pool } = require("pg");
 const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({
   connectionString,
@@ -82,7 +82,6 @@ app.route("/").get(loggedIn, (req, res) => {
 });
 
 app.route("/profile/").get(loggedIn, (req, res) => {
-  console.log(req.user);
     res.render(`${__dirname}/views/profile`, { username: req.user.rows[0].username });
 });
 
