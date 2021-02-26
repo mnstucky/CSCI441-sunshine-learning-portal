@@ -15,26 +15,25 @@
         <div class="col-sm col-md border border-dark me-1 my-1">
           <p>My Personal Info</p>
           <div id="centerText">
-            <p class="fs-4">Student Name</p>
-            <p>Student ID #</p>
-            <p>Student email address</p>
+            <p class="fs-4"><%- studentname %></p>
+            <p>Student ID #<%- studentid %></p>
+            <p><%- studentemail %></p>
           </div>
         </div>
         <!-- My Location Info -->
         <div class="col-sm col-md border border-dark ms-1 my-1"> 
-          <p>My Location Info</p>
+          <p>My School Info</p>
           <div id="centerText">
-            <p class="fs-4">School Name</p>
-            <p>School Address</p>
-            <p>School Phone Number</p>
-            <p>School Fax Number</p>
+            <p class="fs-4"><%- schoolname %></p>
+            <p> <%- schooladdress %></p>
+            <p>School Phone Number: <%- schoolphone %></p>
           </div>
         </div>
       </div>
       
       <!-- Badges -->
       <div class="row border border-dark my-2">
-        <h4 id="centerText"">My Badges</h4>
+        <h4 id="centerText">My Badges</h4>
         <div class="p-2">
           <i class="fas fa-certificate"></i>
           <i class="fas fa-star"></i>

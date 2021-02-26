@@ -13,7 +13,7 @@ const session = require("express-session");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const bcrypt = require("bcrypt");
-const flash = require('connect-flash');
+const flash = require("connect-flash");
 
 // Load database services
 const { Pool } = require("pg");
@@ -45,7 +45,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 passport.use(
   new LocalStrategy(async function (username, password, done) {
-    const text = "SELECT * FROM logins WHERE username = $1";
+    const text = "SELECT * FROM student_info WHERE studentid = $1";
     const values = [username];
     pool.query(text, values, (err, user) => {
       console.log(`User ${username} attempted to log in.`);
@@ -78,22 +78,44 @@ app.set("view engine", "ejs");
 // Define routes
 
 app.route("/").get(loggedIn, (req, res) => {
-  res.render(`${__dirname}/views/profile`, { username: req.user.rows[0].username }); // TODO: Clean up user object
+  console.log(req.user.rows[0]);
+  res.render(`${__dirname}/views/profile`, {
+    studentname: `${req.user.rows[0].firstname} ${req.user.rows[0].lastname}`,
+    studentid: `${req.user.rows[0].studentid}`,
+    studentemail: `${req.user.rows[0].studentemail}`,
+    teachername: `${req.user.rows[0].teachername}`,
+    teacheremail: `${req.user.rows[0].teacheremail}`,
+    schoolname: `${req.user.rows[0].schoolname}`,
+    schooladdress: `${req.user.rows[0].schooladdress}`,
+    schoolphone: `${req.user.rows[0].schoolphone}`,
+  }); // TODO: Clean up user object
 });
 
 app.route("/profile/").get(loggedIn, (req, res) => {
-    res.render(`${__dirname}/views/profile`, { username: req.user.rows[0].username });
+  res.render(`${__dirname}/views/profile`, {
+    studentname: `${req.user.rows[0].firstname} ${req.user.rows[0].lastname}`,
+    studentid: `${req.user.rows[0].studentid}`,
+    studentemail: `${req.user.rows[0].studentemail}`,
+    teachername: `${req.user.rows[0].teachername}`,
+    teacheremail: `${req.user.rows[0].teacheremail}`,
+    schoolname: `${req.user.rows[0].schoolname}`,
+    schooladdress: `${req.user.rows[0].schooladdress}`,
+    schoolphone: `${req.user.rows[0].schoolphone}`,
+  });
 });
 
 app.get("/login/", (req, res) => {
-  res.render(`${__dirname}/views/login`, { username: "" , errorMessage: req.flash('error')});
+  res.render(`${__dirname}/views/login`, {
+    studentname: "",
+    errorMessage: req.flash("error"),
+  });
 });
 
 // Handle sign in form submissions
 app.route("/login/").post(
   passport.authenticate("local", {
     failureRedirect: "/login/",
-    failureFlash: true
+    failureFlash: true,
   }),
   (req, res) => {
     res.redirect("/profile/");
@@ -101,19 +123,39 @@ app.route("/login/").post(
 );
 
 app.route("/contact/").get(loggedIn, (req, res) => {
-  res.render(`${__dirname}/views/contact`, { username: req.user.rows[0].username });
+  res.render(`${__dirname}/views/contact`, {
+    studentname: `${req.user.rows[0].firstname} ${req.user.rows[0].lastname}`,
+    schoolname: `${req.user.rows[0].schoolname}`,
+    schooladdress: `${req.user.rows[0].schooladdress}`,
+    schoolphone: `${req.user.rows[0].schoolphone}`,
+  });
 });
 
 app.route("/discussions/").get(loggedIn, (req, res) => {
-  res.render(`${__dirname}/views/discussions`, { username: req.user.rows[0].username });
+  res.render(`${__dirname}/views/discussions`, {
+    studentname: `${req.user.rows[0].firstname} ${req.user.rows[0].lastname}`,
+    schoolname: `${req.user.rows[0].schoolname}`,
+    schooladdress: `${req.user.rows[0].schooladdress}`,
+    schoolphone: `${req.user.rows[0].schoolphone}`,
+  });
 });
 
 app.route("/leaders/").get(loggedIn, (req, res) => {
-  res.render(`${__dirname}/views/leaders`, { username: req.user.rows[0].username });
+  res.render(`${__dirname}/views/leaders`, {
+    studentname: `${req.user.rows[0].firstname} ${req.user.rows[0].lastname}`,
+    schoolname: `${req.user.rows[0].schoolname}`,
+    schooladdress: `${req.user.rows[0].schooladdress}`,
+    schoolphone: `${req.user.rows[0].schoolphone}`,
+  });
 });
 
 app.route("/learning/").get(loggedIn, (req, res) => {
-  res.render(`${__dirname}/views/learning`, { username: req.user.rows[0].username });
+  res.render(`${__dirname}/views/learning`, {
+    studentname: `${req.user.rows[0].firstname} ${req.user.rows[0].lastname}`,
+    schoolname: `${req.user.rows[0].schoolname}`,
+    schooladdress: `${req.user.rows[0].schooladdress}`,
+    schoolphone: `${req.user.rows[0].schoolphone}`,
+  });
 });
 
 app.route("/logout/").get((req, res) => {
@@ -123,10 +165,10 @@ app.route("/logout/").get((req, res) => {
 
 // Store user sessions as cookies
 passport.serializeUser((user, done) => {
-  done(null, user.username);
+  done(null, user.studentid);
 });
 passport.deserializeUser((username, done) => {
-  const text = "SELECT * FROM logins WHERE username = $1";
+  const text = "SELECT * FROM student_info WHERE studentid = $1";
   const values = [username];
   pool.query(text, values, (err, user) => {
     done(err, user);

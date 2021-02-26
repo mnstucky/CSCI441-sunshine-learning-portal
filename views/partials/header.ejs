@@ -68,13 +68,13 @@
             </li>
 
             <!-- Display a sign in link if no-one is logged in; otherwise, display a username and log out link -->
-            <% if (username === "") { %> 
+            <% if (studentname === "") { %> 
               <li class="nav-item">
                 <a class="nav-link" href="/login/">Sign In</a>
               </li>
             <% } else { %> 
             <li class="nav-item">
-              <p class="nav-link mb-0">Logged In As: <%- username %></p>
+              <p class="nav-link mb-0">Logged In As: <%- studentname %></p>
             </li>
 
             <li>

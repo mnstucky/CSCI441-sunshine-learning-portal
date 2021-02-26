@@ -1,14 +1,16 @@
 <footer class="container">
-    <p class="text-center">
-      Name of School
-      District&nbsp;&nbsp;|&nbsp;&nbsp;Address&nbsp;&nbsp;|&nbsp;&nbsp;Phone
-      Number
-    </p>
-    <p class="text-center">&copy; Powered by Sunshine Learning Portal, LLC</p>
-  </footer>
-  <!-- This script tag needs to stay at the bottom of the body -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
-    crossorigin="anonymous"
-  ></script>
+  <% if (studentname !== "") { %>
+  <p class="text-center">
+    <%- schoolname %>&nbsp;&nbsp;|&nbsp;&nbsp;<%- schooladdress
+    %>&nbsp;&nbsp;|&nbsp;&nbsp;<%- schoolphone %>
+  </p>
+  <% } %>
+
+  <p class="text-center">&copy; Powered by Sunshine Learning Portal, LLC</p>
+</footer>
+<!-- This script tag needs to stay at the bottom of the body -->
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
+  crossorigin="anonymous"
+></script>
