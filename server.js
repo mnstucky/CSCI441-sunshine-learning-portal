@@ -16,14 +16,7 @@ const bcrypt = require("bcrypt");
 const flash = require("connect-flash");
 
 // Load database services
-const { Pool } = require("pg");
-const connectionString = process.env.DATABASE_URL;
-const pool = new Pool({
-  connectionString,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+const { pool, getUserById } = require('./model/db.js');
 
 // Serve static files in the public directory as /public/
 app.use("/public", express.static("public"));
@@ -78,7 +71,6 @@ app.set("view engine", "ejs");
 // Define routes
 
 app.route("/").get(loggedIn, (req, res) => {
-  console.log(req.user.rows[0]);
   res.render(`${__dirname}/views/profile`, {
     studentname: `${req.user.firstname} ${req.user.lastname}`,
     studentid: `${req.user.studentid}`,
@@ -88,7 +80,7 @@ app.route("/").get(loggedIn, (req, res) => {
     schoolname: `${req.user.schoolname}`,
     schooladdress: `${req.user.schooladdress}`,
     schoolphone: `${req.user.schoolphone}`,
-  }); // TODO: Clean up user object
+  });
 });
 
 app.route("/profile/").get(loggedIn, (req, res) => {
@@ -167,12 +159,9 @@ app.route("/logout/").get((req, res) => {
 passport.serializeUser((user, done) => {
   done(null, user.studentid);
 });
-passport.deserializeUser((username, done) => {
-  const text = "SELECT * FROM student_info WHERE studentid = $1";
-  const values = [username];
-  pool.query(text, values, (err, user) => {
-    done(err, user.rows[0]);
-  });
+passport.deserializeUser(async (username, done) => {
+  const user = await getUserById(username);
+  done(null, user);
 });
 
 // Start server
