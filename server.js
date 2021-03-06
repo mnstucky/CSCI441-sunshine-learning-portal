@@ -80,27 +80,27 @@ app.set("view engine", "ejs");
 app.route("/").get(loggedIn, (req, res) => {
   console.log(req.user.rows[0]);
   res.render(`${__dirname}/views/profile`, {
-    studentname: `${req.user.rows[0].firstname} ${req.user.rows[0].lastname}`,
-    studentid: `${req.user.rows[0].studentid}`,
-    studentemail: `${req.user.rows[0].studentemail}`,
-    teachername: `${req.user.rows[0].teachername}`,
-    teacheremail: `${req.user.rows[0].teacheremail}`,
-    schoolname: `${req.user.rows[0].schoolname}`,
-    schooladdress: `${req.user.rows[0].schooladdress}`,
-    schoolphone: `${req.user.rows[0].schoolphone}`,
+    studentname: `${req.user.firstname} ${req.user.lastname}`,
+    studentid: `${req.user.studentid}`,
+    studentemail: `${req.user.studentemail}`,
+    teachername: `${req.user.teachername}`,
+    teacheremail: `${req.user.teacheremail}`,
+    schoolname: `${req.user.schoolname}`,
+    schooladdress: `${req.user.schooladdress}`,
+    schoolphone: `${req.user.schoolphone}`,
   }); // TODO: Clean up user object
 });
 
 app.route("/profile/").get(loggedIn, (req, res) => {
   res.render(`${__dirname}/views/profile`, {
-    studentname: `${req.user.rows[0].firstname} ${req.user.rows[0].lastname}`,
-    studentid: `${req.user.rows[0].studentid}`,
-    studentemail: `${req.user.rows[0].studentemail}`,
-    teachername: `${req.user.rows[0].teachername}`,
-    teacheremail: `${req.user.rows[0].teacheremail}`,
-    schoolname: `${req.user.rows[0].schoolname}`,
-    schooladdress: `${req.user.rows[0].schooladdress}`,
-    schoolphone: `${req.user.rows[0].schoolphone}`,
+    studentname: `${req.user.firstname} ${req.user.lastname}`,
+    studentid: `${req.user.studentid}`,
+    studentemail: `${req.user.studentemail}`,
+    teachername: `${req.user.teachername}`,
+    teacheremail: `${req.user.teacheremail}`,
+    schoolname: `${req.user.schoolname}`,
+    schooladdress: `${req.user.schooladdress}`,
+    schoolphone: `${req.user.schoolphone}`,
   });
 });
 
@@ -124,37 +124,37 @@ app.route("/login/").post(
 
 app.route("/contact/").get(loggedIn, (req, res) => {
   res.render(`${__dirname}/views/contact`, {
-    studentname: `${req.user.rows[0].firstname} ${req.user.rows[0].lastname}`,
-    schoolname: `${req.user.rows[0].schoolname}`,
-    schooladdress: `${req.user.rows[0].schooladdress}`,
-    schoolphone: `${req.user.rows[0].schoolphone}`,
+    studentname: `${req.user.firstname} ${req.user.lastname}`,
+    schoolname: `${req.user.schoolname}`,
+    schooladdress: `${req.user.schooladdress}`,
+    schoolphone: `${req.user.schoolphone}`,
   });
 });
 
 app.route("/discussions/").get(loggedIn, (req, res) => {
   res.render(`${__dirname}/views/discussions`, {
-    studentname: `${req.user.rows[0].firstname} ${req.user.rows[0].lastname}`,
-    schoolname: `${req.user.rows[0].schoolname}`,
-    schooladdress: `${req.user.rows[0].schooladdress}`,
-    schoolphone: `${req.user.rows[0].schoolphone}`,
+    studentname: `${req.user.firstname} ${req.user.lastname}`,
+    schoolname: `${req.user.schoolname}`,
+    schooladdress: `${req.user.schooladdress}`,
+    schoolphone: `${req.user.schoolphone}`,
   });
 });
 
 app.route("/leaders/").get(loggedIn, (req, res) => {
   res.render(`${__dirname}/views/leaders`, {
-    studentname: `${req.user.rows[0].firstname} ${req.user.rows[0].lastname}`,
-    schoolname: `${req.user.rows[0].schoolname}`,
-    schooladdress: `${req.user.rows[0].schooladdress}`,
-    schoolphone: `${req.user.rows[0].schoolphone}`,
+    studentname: `${req.user.firstname} ${req.user.lastname}`,
+    schoolname: `${req.user.schoolname}`,
+    schooladdress: `${req.user.schooladdress}`,
+    schoolphone: `${req.user.schoolphone}`,
   });
 });
 
 app.route("/learning/").get(loggedIn, (req, res) => {
   res.render(`${__dirname}/views/learning`, {
-    studentname: `${req.user.rows[0].firstname} ${req.user.rows[0].lastname}`,
-    schoolname: `${req.user.rows[0].schoolname}`,
-    schooladdress: `${req.user.rows[0].schooladdress}`,
-    schoolphone: `${req.user.rows[0].schoolphone}`,
+    studentname: `${req.user.firstname} ${req.user.lastname}`,
+    schoolname: `${req.user.schoolname}`,
+    schooladdress: `${req.user.schooladdress}`,
+    schoolphone: `${req.user.schoolphone}`,
   });
 });
 
@@ -171,7 +171,7 @@ passport.deserializeUser((username, done) => {
   const text = "SELECT * FROM student_info WHERE studentid = $1";
   const values = [username];
   pool.query(text, values, (err, user) => {
-    done(err, user);
+    done(err, user.rows[0]);
   });
 });
 
