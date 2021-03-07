@@ -21,7 +21,6 @@ const { pool, getUserById } = require("./model/db.js");
 // Load email services
 const nodemailer = require("nodemailer");
 
-
 // Serve static files in the public directory as /public/
 app.use("/public", express.static("public"));
 
@@ -130,17 +129,18 @@ app.route("/contact/").get(loggedIn, (req, res) => {
 app.route("/api/contact/").post((req, res) => {
   const password = process.env.YAHOO_APP_PW;
   const transporter = nodemailer.createTransport({
-  service: "Yahoo",
-  auth: {
-    user: "studenttestaddress", // In production, the username and password would load from the user's profile
-    pass: password
-  }
-});
+    service: "Yahoo",
+    auth: {
+      user: "studenttestaddress", // In production, the username and password would load from the user's profile
+      pass: password,
+    },
+  });
+  console.log(req.user.teacheremail);
   const mailOptions = {
     from: "studenttestaddress@yahoo.com",
-    to: "teachertestaddress@yahoo.com",
-    subject: "Test Message",
-    text: `${req.body.myQuestion}` 
+    to: `${req.user.teacheremail}`,
+    subject: `Question from ${req.user.firstname} ${req.user.lastname}`,
+    text: `${req.body.myQuestion}`,
   };
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) {
@@ -150,7 +150,7 @@ app.route("/api/contact/").post((req, res) => {
       console.log("Email sent");
       res.send("Succeeded");
     }
-  })
+  });
 });
 
 app.route("/discussions/").get(loggedIn, (req, res) => {
