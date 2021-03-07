@@ -135,7 +135,6 @@ app.route("/api/contact/").post((req, res) => {
       pass: password,
     },
   });
-  console.log(req.user.teacheremail);
   const mailOptions = {
     from: "studenttestaddress@yahoo.com",
     to: `${req.user.teacheremail}`,
@@ -145,10 +144,18 @@ app.route("/api/contact/").post((req, res) => {
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) {
       console.error(err);
-      res.send("Failed");
+      res.render(`${__dirname}/views/contactresults`, {
+        contactmessage: "Sorry, something went wrong. Please try again.",
+      });
     } else {
       console.log("Email sent");
-      res.send("Succeeded");
+      res.render(`${__dirname}/views/contactresults`, {
+        contactmessage: `Message sent to ${req.user.teachername} at ${req.user.teacheremail}.`,
+        studentname: `${req.user.firstname} ${req.user.lastname}`,
+        schoolname: `${req.user.schoolname}`,
+        schooladdress: `${req.user.schooladdress}`,
+        schoolphone: `${req.user.schoolphone}`,
+      });
     }
   });
 });
