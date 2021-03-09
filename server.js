@@ -171,7 +171,6 @@ app.route("/api/contact/").post(async (req, res) => {
   const subject = `Question from ${firstname} ${lastname}`;
   const text = myQuestion;
   const success = await sendEmail(from, to, subject, text);
-  console.log(success);
   if (success) {
     res.render(`${__dirname}/views/contactresults`, {
       contactmessage: `Message sent to ${teachername} at ${teacheremail}.`,
