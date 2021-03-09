@@ -15,11 +15,10 @@ const LocalStrategy = require("passport-local");
 const bcrypt = require("bcrypt");
 const flash = require("connect-flash");
 
-// Load database services
+// Load services
 const { pool, getUserById, getQuestionsByTrack } = require("./model/db.js");
-
-// Load email services
 const nodemailer = require("nodemailer");
+const { selectRandomQuestions } = require("./services/learning.js");
 
 // Serve static files in the public directory as /public/
 app.use("/public", express.static("public"));
@@ -189,24 +188,12 @@ app.route("/learning/").get(loggedIn, (req, res) => {
 
 app.route("/api/").get(loggedIn, async (req, res) => {
   const action = req.query.action;
-  let num = req.query.num;
+  const num = req.query.num;
   const track = req.query.track;
   switch (action) {
     case "getquestions":
       const allQuestions = await getQuestionsByTrack(track);
-      if (allQuestions.length < num) {
-        num = allQuestions.length;
-      }
-      const selectedQuestions = [];
-      const usedIndices = [];
-      while (selectedQuestions.length < num) {
-        let index = Math.floor(Math.random() * num);
-        if (usedIndices.includes(index)) {
-          continue;
-        }
-        usedIndices.push(index);
-        selectedQuestions.push(allQuestions[index]);
-      }
+      const selectedQuestions = selectRandomQuestions(allQuestions, num); 
       res.json(selectedQuestions);
       break;
   }
