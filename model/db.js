@@ -16,6 +16,7 @@ async function getUserById(userId) {
     return res.rows[0];
   } catch (err) {
     console.error(err.stack);
+    return undefined;
   }
 }
 

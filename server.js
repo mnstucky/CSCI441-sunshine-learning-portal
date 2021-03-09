@@ -43,21 +43,15 @@ app.use(passport.initialize());
 app.use(passport.session());
 passport.use(
   new LocalStrategy(async function (username, password, done) {
-    const text = "SELECT * FROM student_info WHERE studentid = $1";
-    const values = [username];
-    pool.query(text, values, (err, user) => {
-      console.log(`User ${username} attempted to log in.`);
-      if (err) {
-        return done(err);
-      }
-      if (user.rows.length === 0) {
-        return done(null, false, { message: "Incorrect username." });
-      }
-      if (!bcrypt.compareSync(password, user.rows[0].password)) {
-        return done(null, false, { message: "Incorrect password." });
-      }
-      return done(null, user.rows[0]);
-    });
+    const user = await getUserById(username);
+    console.log(`User ${username} attempted to log in.`);
+    if (!user) {
+      return done(null, false, { message: "Incorrect username"});
+    }
+    if (!bcrypt.compareSync(password, user.password)) {
+      return done(null, false, { message: "Incorrect password." });
+    }
+    return done(null, user);
   })
 );
 
@@ -206,9 +200,7 @@ app.route("/logout/").get((req, res) => {
 // Define API routes
 
 app.route("/api/").get(loggedIn, async (req, res) => {
-  const action = req.query.action;
-  const num = req.query.num;
-  const track = req.query.track;
+  const { action, num, track } = req.query;
   switch (action) {
     case "getquestions":
       const allQuestions = await getQuestionsByTrack(track);
@@ -243,7 +235,8 @@ app.route("/api/contact/").post(async (req, res) => {
       schooladdress,
       schoolphone,
     });
-  } else { // TODO: confirm that we enter this else branch if the email fails
+  } else {
+    // TODO: confirm that we enter this else branch if the email fails
     res.render(`${__dirname}/views/contactresults`, {
       contactmessage: "Sorry, something went wrong. Please try again.",
       studentname: `${firstname} ${lastname}`,
