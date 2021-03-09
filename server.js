@@ -15,10 +15,13 @@ const LocalStrategy = require("passport-local");
 const bcrypt = require("bcrypt");
 const flash = require("connect-flash");
 
-// Load services
+// Load DB services
 const { pool, getUserById, getQuestionsByTrack } = require("./model/db.js");
+
+// Load other services
 const { selectRandomQuestions } = require("./services/learning.js");
 const { sendEmail } = require("./services/contact.js");
+const { loggedIn } = require("./services/login.js");
 
 // Serve static files in the public directory as /public/
 app.use("/public", express.static("public"));
@@ -57,15 +60,6 @@ passport.use(
     });
   })
 );
-
-// Define middleware to redirect pages to login if no-one is logged in
-function loggedIn(req, res, next) {
-  if (req.user) {
-    next();
-  } else {
-    res.redirect("/login/");
-  }
-}
 
 // Set templating engine to EJS
 app.set("view engine", "ejs");
@@ -154,42 +148,6 @@ app.route("/contact/").get(loggedIn, (req, res) => {
   });
 });
 
-app.route("/api/contact/").post(async (req, res) => {
-  const {
-    firstname,
-    lastname,
-    studentemail,
-    schoolname,
-    schooladdress,
-    schoolphone,
-    teachername,
-    teacheremail,
-  } = req.user;
-  const { myQuestion } = req.body;
-  const from = studentemail;
-  const to = teacheremail;
-  const subject = `Question from ${firstname} ${lastname}`;
-  const text = myQuestion;
-  const success = await sendEmail(from, to, subject, text);
-  if (success) {
-    res.render(`${__dirname}/views/contactresults`, {
-      contactmessage: `Message sent to ${teachername} at ${teacheremail}.`,
-      studentname: `${firstname} ${lastname}`,
-      schoolname,
-      schooladdress,
-      schoolphone,
-    });
-  } else {
-    res.render(`${__dirname}/views/contactresults`, {
-      contactmessage: "Sorry, something went wrong. Please try again.",
-      studentname: `${firstname} ${lastname}`,
-      schoolname,
-      schooladdress,
-      schoolphone,
-    });
-  }
-});
-
 app.route("/discussions/").get(loggedIn, (req, res) => {
   const {
     firstname,
@@ -240,6 +198,13 @@ app.route("/learning/").get(loggedIn, (req, res) => {
   });
 });
 
+app.route("/logout/").get((req, res) => {
+  req.logout();
+  res.redirect("/");
+});
+
+// Define API routes
+
 app.route("/api/").get(loggedIn, async (req, res) => {
   const action = req.query.action;
   const num = req.query.num;
@@ -253,9 +218,40 @@ app.route("/api/").get(loggedIn, async (req, res) => {
   }
 });
 
-app.route("/logout/").get((req, res) => {
-  req.logout();
-  res.redirect("/");
+app.route("/api/contact/").post(async (req, res) => {
+  const {
+    firstname,
+    lastname,
+    studentemail,
+    schoolname,
+    schooladdress,
+    schoolphone,
+    teachername,
+    teacheremail,
+  } = req.user;
+  const { myQuestion } = req.body;
+  const from = studentemail;
+  const to = teacheremail;
+  const subject = `Question from ${firstname} ${lastname}`;
+  const text = myQuestion;
+  const success = await sendEmail(from, to, subject, text);
+  if (success) {
+    res.render(`${__dirname}/views/contactresults`, {
+      contactmessage: `Message sent to ${teachername} at ${teacheremail}.`,
+      studentname: `${firstname} ${lastname}`,
+      schoolname,
+      schooladdress,
+      schoolphone,
+    });
+  } else { // TODO: confirm that we enter this else branch if the email fails
+    res.render(`${__dirname}/views/contactresults`, {
+      contactmessage: "Sorry, something went wrong. Please try again.",
+      studentname: `${firstname} ${lastname}`,
+      schoolname,
+      schooladdress,
+      schoolphone,
+    });
+  }
 });
 
 // Store user sessions as cookies
