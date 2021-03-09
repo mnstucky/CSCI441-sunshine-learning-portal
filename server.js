@@ -16,7 +16,7 @@ const bcrypt = require("bcrypt");
 const flash = require("connect-flash");
 
 // Load database services
-const { pool, getUserById } = require("./model/db.js");
+const { pool, getUserById, getQuestionsByTrack } = require("./model/db.js");
 
 // Load email services
 const nodemailer = require("nodemailer");
@@ -185,6 +185,31 @@ app.route("/learning/").get(loggedIn, (req, res) => {
     schooladdress: `${req.user.schooladdress}`,
     schoolphone: `${req.user.schoolphone}`,
   });
+});
+
+app.route("/api/").get(loggedIn, async (req, res) => {
+  const action = req.query.action;
+  let num = req.query.num;
+  const track = req.query.track;
+  switch (action) {
+    case "getquestions":
+      const allQuestions = await getQuestionsByTrack(track);
+      if (allQuestions.length < num) {
+        num = allQuestions.length;
+      }
+      const selectedQuestions = [];
+      const usedIndices = [];
+      while (selectedQuestions.length < num) {
+        let index = Math.floor(Math.random() * num);
+        if (usedIndices.includes(index)) {
+          continue;
+        }
+        usedIndices.push(index);
+        selectedQuestions.push(allQuestions[index]);
+      }
+      res.json(selectedQuestions);
+      break;
+  }
 });
 
 app.route("/logout/").get((req, res) => {
