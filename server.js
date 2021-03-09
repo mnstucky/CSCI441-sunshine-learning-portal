@@ -73,28 +73,50 @@ app.set("view engine", "ejs");
 // Define routes
 
 app.route("/").get(loggedIn, (req, res) => {
+  const {
+    firstname,
+    lastname,
+    studentid,
+    studentemail,
+    teachername,
+    teacheremail,
+    schoolname,
+    schooladdress,
+    schoolphone,
+  } = req.user;
   res.render(`${__dirname}/views/profile`, {
-    studentname: `${req.user.firstname} ${req.user.lastname}`,
-    studentid: `${req.user.studentid}`,
-    studentemail: `${req.user.studentemail}`,
-    teachername: `${req.user.teachername}`,
-    teacheremail: `${req.user.teacheremail}`,
-    schoolname: `${req.user.schoolname}`,
-    schooladdress: `${req.user.schooladdress}`,
-    schoolphone: `${req.user.schoolphone}`,
+    studentname: `${firstname} ${lastname}`,
+    studentid,
+    studentemail,
+    teachername,
+    teacheremail,
+    schoolname,
+    schooladdress,
+    schoolphone,
   });
 });
 
 app.route("/profile/").get(loggedIn, (req, res) => {
+  const {
+    firstname,
+    lastname,
+    studentid,
+    studentemail,
+    teachername,
+    teacheremail,
+    schoolname,
+    schooladdress,
+    schoolphone,
+  } = req.user;
   res.render(`${__dirname}/views/profile`, {
-    studentname: `${req.user.firstname} ${req.user.lastname}`,
-    studentid: `${req.user.studentid}`,
-    studentemail: `${req.user.studentemail}`,
-    teachername: `${req.user.teachername}`,
-    teacheremail: `${req.user.teacheremail}`,
-    schoolname: `${req.user.schoolname}`,
-    schooladdress: `${req.user.schooladdress}`,
-    schoolphone: `${req.user.schoolphone}`,
+    studentname: `${firstname} ${lastname}`,
+    studentid,
+    studentemail,
+    teachername,
+    teacheremail,
+    schoolname,
+    schooladdress,
+    schoolphone,
   });
 });
 
@@ -117,15 +139,31 @@ app.route("/login/").post(
 );
 
 app.route("/contact/").get(loggedIn, (req, res) => {
+  const {
+    firstname,
+    lastname,
+    schoolname,
+    schooladdress,
+    schoolphone,
+  } = req.user;
   res.render(`${__dirname}/views/contact`, {
-    studentname: `${req.user.firstname} ${req.user.lastname}`,
-    schoolname: `${req.user.schoolname}`,
-    schooladdress: `${req.user.schooladdress}`,
-    schoolphone: `${req.user.schoolphone}`,
+    studentname: `${firstname} ${lastname}`,
+    schoolname,
+    schooladdress,
+    schoolphone,
   });
 });
 
 app.route("/api/contact/").post((req, res) => {
+  const {
+    firstname,
+    lastname,
+    schoolname,
+    schooladdress,
+    schoolphone,
+    teachername,
+    teacheremail,
+  } = req.user;
   const password = process.env.YAHOO_APP_PW;
   const transporter = nodemailer.createTransport({
     service: "Yahoo",
@@ -136,8 +174,8 @@ app.route("/api/contact/").post((req, res) => {
   });
   const mailOptions = {
     from: "studenttestaddress@yahoo.com",
-    to: `${req.user.teacheremail}`,
-    subject: `Question from ${req.user.firstname} ${req.user.lastname}`,
+    to: teacheremail,
+    subject: `Question from ${firstname} ${lastname}`,
     text: `${req.body.myQuestion}`,
   };
   transporter.sendMail(mailOptions, (err, info) => {
@@ -149,40 +187,63 @@ app.route("/api/contact/").post((req, res) => {
     } else {
       console.log("Email sent");
       res.render(`${__dirname}/views/contactresults`, {
-        contactmessage: `Message sent to ${req.user.teachername} at ${req.user.teacheremail}.`,
-        studentname: `${req.user.firstname} ${req.user.lastname}`,
-        schoolname: `${req.user.schoolname}`,
-        schooladdress: `${req.user.schooladdress}`,
-        schoolphone: `${req.user.schoolphone}`,
+        contactmessage: `Message sent to ${teachername} at ${teacheremail}.`,
+        studentname: `${firstname} ${lastname}`,
+        schoolname,
+        schooladdress,
+        schoolphone,
       });
     }
   });
 });
 
 app.route("/discussions/").get(loggedIn, (req, res) => {
+  const {
+    firstname,
+    lastname,
+    schoolname,
+    schooladdress,
+    schoolphone,
+  } = req.user;
+
   res.render(`${__dirname}/views/discussions`, {
-    studentname: `${req.user.firstname} ${req.user.lastname}`,
-    schoolname: `${req.user.schoolname}`,
-    schooladdress: `${req.user.schooladdress}`,
-    schoolphone: `${req.user.schoolphone}`,
+    studentname: `${firstname} ${lastname}`,
+    schoolname,
+    schooladdress,
+    schoolphone,
   });
 });
 
 app.route("/leaders/").get(loggedIn, (req, res) => {
+  const {
+    firstname,
+    lastname,
+    schoolname,
+    schooladdress,
+    schoolphone,
+  } = req.user;
+
   res.render(`${__dirname}/views/leaders`, {
-    studentname: `${req.user.firstname} ${req.user.lastname}`,
-    schoolname: `${req.user.schoolname}`,
-    schooladdress: `${req.user.schooladdress}`,
-    schoolphone: `${req.user.schoolphone}`,
+    studentname: `${firstname} ${lastname}`,
+    schoolname,
+    schooladdress,
+    schoolphone,
   });
 });
 
 app.route("/learning/").get(loggedIn, (req, res) => {
+  const {
+    firstname,
+    lastname,
+    schoolname,
+    schooladdress,
+    schoolphone,
+  } = req.user;
   res.render(`${__dirname}/views/learning`, {
-    studentname: `${req.user.firstname} ${req.user.lastname}`,
-    schoolname: `${req.user.schoolname}`,
-    schooladdress: `${req.user.schooladdress}`,
-    schoolphone: `${req.user.schoolphone}`,
+    studentname: `${firstname} ${lastname}`,
+    schoolname,
+    schooladdress,
+    schoolphone,
   });
 });
 
@@ -193,7 +254,7 @@ app.route("/api/").get(loggedIn, async (req, res) => {
   switch (action) {
     case "getquestions":
       const allQuestions = await getQuestionsByTrack(track);
-      const selectedQuestions = selectRandomQuestions(allQuestions, num); 
+      const selectedQuestions = selectRandomQuestions(allQuestions, num);
       res.json(selectedQuestions);
       break;
   }
