@@ -17,8 +17,8 @@ const flash = require("connect-flash");
 
 // Load services
 const { pool, getUserById, getQuestionsByTrack } = require("./model/db.js");
-const nodemailer = require("nodemailer");
 const { selectRandomQuestions } = require("./services/learning.js");
+const { sendEmail } = require("./services/contact.js");
 
 // Serve static files in the public directory as /public/
 app.use("/public", express.static("public"));
@@ -154,47 +154,41 @@ app.route("/contact/").get(loggedIn, (req, res) => {
   });
 });
 
-app.route("/api/contact/").post((req, res) => {
+app.route("/api/contact/").post(async (req, res) => {
   const {
     firstname,
     lastname,
+    studentemail,
     schoolname,
     schooladdress,
     schoolphone,
     teachername,
     teacheremail,
   } = req.user;
-  const password = process.env.YAHOO_APP_PW;
-  const transporter = nodemailer.createTransport({
-    service: "Yahoo",
-    auth: {
-      user: "studenttestaddress", // In production, the username and password would load from the user's profile
-      pass: password,
-    },
-  });
-  const mailOptions = {
-    from: "studenttestaddress@yahoo.com",
-    to: teacheremail,
-    subject: `Question from ${firstname} ${lastname}`,
-    text: `${req.body.myQuestion}`,
-  };
-  transporter.sendMail(mailOptions, (err, info) => {
-    if (err) {
-      console.error(err);
-      res.render(`${__dirname}/views/contactresults`, {
-        contactmessage: "Sorry, something went wrong. Please try again.",
-      });
-    } else {
-      console.log("Email sent");
-      res.render(`${__dirname}/views/contactresults`, {
-        contactmessage: `Message sent to ${teachername} at ${teacheremail}.`,
-        studentname: `${firstname} ${lastname}`,
-        schoolname,
-        schooladdress,
-        schoolphone,
-      });
-    }
-  });
+  const { myQuestion } = req.body;
+  const from = studentemail;
+  const to = teacheremail;
+  const subject = `Question from ${firstname} ${lastname}`;
+  const text = myQuestion;
+  const success = await sendEmail(from, to, subject, text);
+  console.log(success);
+  if (success) {
+    res.render(`${__dirname}/views/contactresults`, {
+      contactmessage: `Message sent to ${teachername} at ${teacheremail}.`,
+      studentname: `${firstname} ${lastname}`,
+      schoolname,
+      schooladdress,
+      schoolphone,
+    });
+  } else {
+    res.render(`${__dirname}/views/contactresults`, {
+      contactmessage: "Sorry, something went wrong. Please try again.",
+      studentname: `${firstname} ${lastname}`,
+      schoolname,
+      schooladdress,
+      schoolphone,
+    });
+  }
 });
 
 app.route("/discussions/").get(loggedIn, (req, res) => {
