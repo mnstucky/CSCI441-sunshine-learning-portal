@@ -211,6 +211,8 @@ app.route("/api/").get(loggedIn, async (req, res) => {
       const question = await getQuestionById(id);
       res.json(question);
       break;
+    default:
+      res.json({});
   }
 });
 
