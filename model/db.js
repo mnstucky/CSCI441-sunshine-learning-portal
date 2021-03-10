@@ -1,4 +1,5 @@
 // Load database services
+const { getTestMessageUrl } = require("nodemailer");
 const { Pool } = require("pg");
 const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({
@@ -42,7 +43,18 @@ async function getQuestionById(id) {
   }
 }
 
+async function getTracks() {
+  const text = "SELECT * from learning_tracks";
+  try {
+    const res = await pool.query(text);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
 exports.pool = pool;
 exports.getUserById = getUserById;
 exports.getQuestionsByTrack = getQuestionsByTrack;
 exports.getQuestionById = getQuestionById;
+exports.getTracks = getTracks;
