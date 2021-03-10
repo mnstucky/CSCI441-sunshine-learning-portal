@@ -16,7 +16,7 @@ const bcrypt = require("bcrypt");
 const flash = require("connect-flash");
 
 // Load DB services
-const { pool, getUserById, getQuestionsByTrack } = require("./model/db.js");
+const { pool, getUserById, getQuestionsByTrack, getQuestionById } = require("./model/db.js");
 
 // Load other services
 const { selectRandomQuestions } = require("./services/learning.js");
@@ -200,12 +200,16 @@ app.route("/logout/").get((req, res) => {
 // Define API routes
 
 app.route("/api/").get(loggedIn, async (req, res) => {
-  const { action, num, track } = req.query;
+  const { action, num, track, id } = req.query;
   switch (action) {
     case "getquestions":
       const allQuestions = await getQuestionsByTrack(track);
       const selectedQuestions = selectRandomQuestions(allQuestions, num);
       res.json(selectedQuestions);
+      break;
+    case "getquestionbyid":
+      const question = await getQuestionById(id);
+      res.json(question);
       break;
   }
 });

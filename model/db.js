@@ -31,6 +31,18 @@ async function getQuestionsByTrack(track) {
   }
 }
 
+async function getQuestionById(id) {
+  const text = "SELECT * from question WHERE questionid = $1";
+  const values = [id];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
 exports.pool = pool;
 exports.getUserById = getUserById;
 exports.getQuestionsByTrack = getQuestionsByTrack;
+exports.getQuestionById = getQuestionById;
