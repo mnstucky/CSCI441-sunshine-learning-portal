@@ -1,4 +1,4 @@
-// Load basic routing services
+// Load basic routing services 
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -16,7 +16,7 @@ const bcrypt = require("bcrypt");
 const flash = require("connect-flash");
 
 // Load DB services
-const { pool, getUserById, getQuestionsByTrack, getQuestionById, getTracks } = require("./model/db.js");
+const { pool, getUserById, getQuestionsByTrack, getQuestionById, getTracks, getTrackName } = require("./model/db.js");
 
 // Load other services
 const { selectRandomQuestions } = require("./services/learning.js");
@@ -215,10 +215,15 @@ app.route("/api/").get(loggedIn, async (req, res) => {
       const tracks = await getTracks();
       res.json(tracks);
       break;
+    case "gettrackname":
+      const trackname = await getTrackName(id);
+      res.send(trackname);
+      break;
     default:
       res.json({});
   }
 });
+
 
 app.route("/api/contact/").post(async (req, res) => {
   const {
