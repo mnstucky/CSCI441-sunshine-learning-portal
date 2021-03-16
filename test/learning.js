@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { addTestUser, deleteTestUser } = require("../model/db.js");
+const { addTestUser, deleteTestUser } = require("../model/test.js");
 
 const chai = require("chai");
 const expect = chai.expect;
@@ -53,6 +53,17 @@ describe("learning track functionality", function () {
         done();
       });
   });
+  it("a user cannot unsubscribe from a track twice", function (done) {
+    agent
+      .put("/api/unsubscribe")
+      .set("content-type", "application/x-www-form-urlencoded")
+      .send({ trackid: 3 })
+      .end(function (err, res) {
+        expect(res.statusCode).to.equal(412);
+        done();
+      });
+
+  })
   after(async () => {
     // Delete dummy account after testing
     await deleteTestUser();

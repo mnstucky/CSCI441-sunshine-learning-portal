@@ -298,7 +298,6 @@ app.route("/api/results/").put(async (req, res) => {
 });
 
 app.route("/api/subscribe/").put(loggedIn, async (req, res) => {
-  // TODO: Test API
   const { trackid } = req.body;
   const { studentid } = req.user;
   const success = await subscribeToTrack(studentid, trackid);
@@ -313,7 +312,6 @@ app.route("/api/subscribe/").put(loggedIn, async (req, res) => {
 });
 
 app.route("/api/unsubscribe/").put(loggedIn, async (req, res) => {
-  // TODO: Test API
   const { trackid } = req.body;
   const { studentid } = req.user;
   const success = await unsubscribeFromTrack (studentid, trackid);
