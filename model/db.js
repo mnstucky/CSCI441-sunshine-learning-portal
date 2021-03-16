@@ -75,6 +75,25 @@ async function getLearningMaterials(trackId) {
   }
 }
 
+async function postResult() {
+
+}
+
+async function subscribeToTrack() {
+  const text = "INSERT INTO "
+}
+
+async function getUserTracks(userId) {
+  const text = "SELECT trackid FROM learning_results WHERE studentid = $1";
+  const values = [userId];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
 exports.pool = pool;
 exports.getUserById = getUserById;
 exports.getQuestionsByTrack = getQuestionsByTrack;
@@ -82,3 +101,6 @@ exports.getQuestionById = getQuestionById;
 exports.getTracks = getTracks;
 exports.getTrackName = getTrackName;
 exports.getLearningMaterials = getLearningMaterials;
+exports.postResult = postResult;
+exports.subscribeToTrack = subscribeToTrack;
+exports.getUserTracks = getUserTracks;

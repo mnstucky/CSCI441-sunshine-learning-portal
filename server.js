@@ -1,4 +1,4 @@
-// Load basic routing services 
+// Load basic routing services
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -16,10 +16,18 @@ const bcrypt = require("bcrypt");
 const flash = require("connect-flash");
 
 // Load DB services
-const { pool, getUserById, getQuestionsByTrack, getQuestionById, getTracks, getTrackName, getLearningMaterials } = require("./model/db.js");
+const {
+  pool,
+  getUserById,
+  getQuestionsByTrack,
+  getQuestionById,
+  getTracks,
+  getTrackName,
+  getLearningMaterials,
+} = require("./model/db.js");
 
 // Load other services
-const { selectRandomQuestions } = require("./services/learning.js");
+const { selectRandomQuestions, selectUserTracks } = require("./services/learning.js");
 const { sendEmail } = require("./services/contact.js");
 const { loggedIn } = require("./services/login.js");
 
@@ -46,7 +54,7 @@ passport.use(
     const user = await getUserById(username);
     console.log(`User ${username} attempted to log in.`);
     if (!user) {
-      return done(null, false, { message: "Incorrect username"});
+      return done(null, false, { message: "Incorrect username" });
     }
     if (!bcrypt.compareSync(password, user.password)) {
       return done(null, false, { message: "Incorrect password." });
@@ -220,18 +228,21 @@ app.route("/api/").get(loggedIn, async (req, res) => {
       res.send(trackname);
       break;
     case "getlearningmaterials":
-      const materials = await getLearningMaterials(id);
+      const materials = await getLearningMaterials(track);
       res.json(materials);
       break;
     case "canskip":
-      const result = await canUserSkipTrack(id);
-      res.send(result);
+      const permission = await canUserSkipTrack(id);
+      res.send(permission);
+      break;
+    case "getusertracks":
+      const usertracks = await selectUserTracks(id);
+      res.json(usertracks);
       break;
     default:
       res.json({});
   }
 });
-
 
 app.route("/api/contact/").post(async (req, res) => {
   const {
@@ -268,6 +279,21 @@ app.route("/api/contact/").post(async (req, res) => {
       schoolphone,
     });
   }
+});
+
+app.route("api/results/").put(async (req, res) => {
+  const { userid, trackid, test, score } = req.body;
+  // If new resource created
+  res.sendStatus(201);
+  // If resource updated
+  res.sendStatus(200);
+});
+
+app.route("api/subscribe/").put(async (req, res) => {
+  const { userid, trackid } = req.body;
+  res.sendStatus(201);
+  // If resource updated
+  res.sendStatus(200);
 });
 
 // Store user sessions as cookies
