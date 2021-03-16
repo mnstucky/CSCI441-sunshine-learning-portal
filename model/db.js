@@ -131,6 +131,28 @@ async function getNumOfPretestQuestions(trackId) {
   }
 }
 
+async function addTestResult(userId, trackId, test, score) {
+  const text = `UPDATE learning_results SET ${test} = $1 WHERE studentid = $2 AND trackid = $3`;
+  const values = [score, userId, trackId];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
+async function getTestResults(userId, trackId) {
+  const text = "SELECT * FROM learning_results WHERE studentid = $1 AND trackid = $2";
+  const values = [userId, trackId];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows[0]; 
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
 exports.pool = pool;
 exports.getUserById = getUserById;
 exports.getQuestionsByTrack = getQuestionsByTrack;
@@ -143,3 +165,5 @@ exports.removeUserFromTrack = removeUserFromTrack;
 exports.getUserTracks = getUserTracks;
 exports.getPretestResult = getPretestResult;
 exports.getNumOfPretestQuestions = getNumOfPretestQuestions;
+exports.addTestResult = addTestResult;
+exports.getTestResults = getTestResults;

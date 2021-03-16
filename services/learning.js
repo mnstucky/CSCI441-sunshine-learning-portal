@@ -1,4 +1,12 @@
-const { getUserTracks, getPretestResult, getNumOfPretestQuestions, addUserToTrack, removeUserFromTrack } = require("../model/db");
+const {
+  getUserTracks,
+  getPretestResult,
+  getNumOfPretestQuestions,
+  addUserToTrack,
+  removeUserFromTrack,
+  addTestResult,
+  getTestResults,
+} = require("../model/db");
 
 function selectRandomQuestions(questions, num) {
   if (questions.length < num) {
@@ -20,7 +28,7 @@ function selectRandomQuestions(questions, num) {
 async function selectUserTracks(id) {
   const data = await getUserTracks(id);
   const tracks = [];
-  data.forEach(value => {
+  data.forEach((value) => {
     tracks.push(value.trackid);
   });
   return tracks;
@@ -40,7 +48,7 @@ async function canUserSkipTrack(userId, trackId) {
 
 async function subscribeToTrack(userId, trackId) {
   const userTracks = await selectUserTracks(userId);
-  const userHasTrack = userTracks.find(id => id === Number(trackId));
+  const userHasTrack = userTracks.find((id) => id === Number(trackId));
   if (userHasTrack) {
     return false;
   } else {
@@ -50,18 +58,35 @@ async function subscribeToTrack(userId, trackId) {
 }
 
 async function unsubscribeFromTrack(userId, trackId) {
-   const userTracks = await selectUserTracks(userId);
-  const userHasTrack = userTracks.find(id => id === Number(trackId));
+  const userTracks = await selectUserTracks(userId);
+  const userHasTrack = userTracks.find((id) => id === Number(trackId));
   if (userHasTrack) {
     await removeUserFromTrack(userId, trackId);
     return true;
   } else {
     return false;
   }
-
 }
+
+async function submitResult(userId, trackId, test, score) {
+  const userTracks = await selectUserTracks(userId);
+  const userHasTrack = userTracks.find((id) => id === Number(trackId));
+  if (!userHasTrack) {
+    return false;
+  }
+  const priorScores = await getTestResults(userId, trackId);
+  const priorScore = priorScores[test];
+  if (!priorScore) {
+    await addTestResult(userId, trackId, test, score);
+    return true;
+  } else {
+    return false;
+  }
+}
+
 exports.selectRandomQuestions = selectRandomQuestions;
 exports.selectUserTracks = selectUserTracks;
 exports.canUserSkipTrack = canUserSkipTrack;
 exports.subscribeToTrack = subscribeToTrack;
 exports.unsubscribeFromTrack = unsubscribeFromTrack;
+exports.submitResult = submitResult;

@@ -24,6 +24,7 @@ const {
   getTracks,
   getTrackName,
   getLearningMaterials,
+  getTestResults,
 } = require("./model/db.js");
 
 // Load other services
@@ -33,6 +34,7 @@ const {
   canUserSkipTrack,
   subscribeToTrack,
   unsubscribeFromTrack,
+  submitResult,
 } = require("./services/learning.js");
 const { sendEmail } = require("./services/contact.js");
 const { loggedIn } = require("./services/login.js");
@@ -246,6 +248,10 @@ app.route("/api/").get(loggedIn, async (req, res) => {
       const usertracks = await selectUserTracks(studentid);
       res.json(usertracks);
       break;
+    case "getresults":
+      const results = await getTestResults(studentid, track);
+      res.json(results);
+      break;
     default:
       res.json({});
   }
@@ -290,18 +296,20 @@ app.route("/api/contact/").post(async (req, res) => {
 
 app.route("/api/results/").put(async (req, res) => {
   const { userid, trackid, test, score } = req.body;
-  // TODO: Fill out API
-  // If new resource created
-  res.sendStatus(201);
-  // If resource updated
-  res.sendStatus(200);
+  const success = await submitResult(userid, trackid, test, score);
+  if (success) {
+    // If new resource created
+    res.sendStatus(201);
+  } else {
+    // If resource updated
+    res.sendStatus(412);
+  }
 });
 
 app.route("/api/subscribe/").put(loggedIn, async (req, res) => {
   const { trackid } = req.body;
   const { studentid } = req.user;
   const success = await subscribeToTrack(studentid, trackid);
-  console.log(success); 
   if (success) {
     // If new resource created
     res.sendStatus(201);
@@ -314,8 +322,7 @@ app.route("/api/subscribe/").put(loggedIn, async (req, res) => {
 app.route("/api/unsubscribe/").put(loggedIn, async (req, res) => {
   const { trackid } = req.body;
   const { studentid } = req.user;
-  const success = await unsubscribeFromTrack (studentid, trackid);
-  console.log(success); 
+  const success = await unsubscribeFromTrack(studentid, trackid);
   if (success) {
     // If unsubscribed
     res.sendStatus(200);
