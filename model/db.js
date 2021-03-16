@@ -64,9 +64,21 @@ async function getTrackName(trackId) {
   }
 }
 
+async function getLearningMaterials(trackId) {
+  const text = "SELECT video1, learningtext, video2 FROM learning_tracks WHERE trackid = $1";
+  const values = [trackId];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
 exports.pool = pool;
 exports.getUserById = getUserById;
 exports.getQuestionsByTrack = getQuestionsByTrack;
 exports.getQuestionById = getQuestionById;
 exports.getTracks = getTracks;
 exports.getTrackName = getTrackName;
+exports.getLearningMaterials = getLearningMaterials;

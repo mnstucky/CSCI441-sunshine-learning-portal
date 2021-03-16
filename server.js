@@ -16,7 +16,7 @@ const bcrypt = require("bcrypt");
 const flash = require("connect-flash");
 
 // Load DB services
-const { pool, getUserById, getQuestionsByTrack, getQuestionById, getTracks, getTrackName } = require("./model/db.js");
+const { pool, getUserById, getQuestionsByTrack, getQuestionById, getTracks, getTrackName, getLearningMaterials } = require("./model/db.js");
 
 // Load other services
 const { selectRandomQuestions } = require("./services/learning.js");
@@ -218,6 +218,14 @@ app.route("/api/").get(loggedIn, async (req, res) => {
     case "gettrackname":
       const trackname = await getTrackName(id);
       res.send(trackname);
+      break;
+    case "getlearningmaterials":
+      const materials = await getLearningMaterials(id);
+      res.json(materials);
+      break;
+    case "canskip":
+      const result = await canUserSkipTrack(id);
+      res.send(result);
       break;
     default:
       res.json({});
