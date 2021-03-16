@@ -27,7 +27,7 @@ const {
 } = require("./model/db.js");
 
 // Load other services
-const { selectRandomQuestions, selectUserTracks } = require("./services/learning.js");
+const { selectRandomQuestions, selectUserTracks, canUserSkipTrack } = require("./services/learning.js");
 const { sendEmail } = require("./services/contact.js");
 const { loggedIn } = require("./services/login.js");
 
@@ -209,6 +209,7 @@ app.route("/logout/").get((req, res) => {
 
 app.route("/api/").get(loggedIn, async (req, res) => {
   const { action, num, track, id } = req.query;
+  const { studentid } = req.user;
   switch (action) {
     case "getquestions":
       const allQuestions = await getQuestionsByTrack(track);
@@ -232,11 +233,11 @@ app.route("/api/").get(loggedIn, async (req, res) => {
       res.json(materials);
       break;
     case "canskip":
-      const permission = await canUserSkipTrack(id);
+      const permission = await canUserSkipTrack(studentid, track);
       res.send(permission);
       break;
     case "getusertracks":
-      const usertracks = await selectUserTracks(id);
+      const usertracks = await selectUserTracks(studentid);
       res.json(usertracks);
       break;
     default:

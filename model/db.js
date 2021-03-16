@@ -94,6 +94,28 @@ async function getUserTracks(userId) {
   }
 }
 
+async function getPretestResult(userId, trackId) {
+  const text = "SELECT pretestscore FROM learning_results WHERE studentid = $1 AND trackid = $2";
+  const values = [userId, trackId];
+  try {
+    const res =  await pool.query(text, values);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
+async function getNumOfPretestQuestions(trackId) {
+  const text = "SELECT pretestquestions FROM learning_tracks WHERE trackid = $1";
+  const values = [trackId];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
 exports.pool = pool;
 exports.getUserById = getUserById;
 exports.getQuestionsByTrack = getQuestionsByTrack;
@@ -104,3 +126,5 @@ exports.getLearningMaterials = getLearningMaterials;
 exports.postResult = postResult;
 exports.subscribeToTrack = subscribeToTrack;
 exports.getUserTracks = getUserTracks;
+exports.getPretestResult = getPretestResult;
+exports.getNumOfPretestQuestions = getNumOfPretestQuestions;

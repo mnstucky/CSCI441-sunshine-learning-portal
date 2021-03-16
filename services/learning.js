@@ -1,4 +1,4 @@
-const { getUserTracks } = require("../model/db");
+const { getUserTracks, getPretestResult, getNumOfPretestQuestions } = require("../model/db");
 
 function selectRandomQuestions(questions, num) {
   if (questions.length < num) {
@@ -26,5 +26,18 @@ async function selectUserTracks(id) {
   return tracks;
 }
 
+async function canUserSkipTrack(userId, trackId) {
+  const rawPretestScore = await getPretestResult(userId, trackId);
+  const pretestScore = rawPretestScore[0].pretestScore;
+  const rawNumOfPretestQuestions = await getNumOfPretestQuestions(trackId);
+  const numOfPretestQuestions = rawNumOfPretestQuestions[0].pretestquestions;
+  let permission = false;
+  if (pretestScore > 0 && numOfPretestQuestions == pretestScore) {
+    permission = true;
+  }
+  return permission;
+}
+
 exports.selectRandomQuestions = selectRandomQuestions;
 exports.selectUserTracks = selectUserTracks;
+exports.canUserSkipTrack = canUserSkipTrack;
