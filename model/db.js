@@ -79,8 +79,15 @@ async function postResult() {
 
 }
 
-async function subscribeToTrack() {
-  const text = "INSERT INTO "
+async function addUserToTrack(userId, trackId) {
+  const text = "INSERT INTO learning_results VALUES ($1, $2, 0, 0, 0, 0, 0)";
+  const values = [userId, trackId];
+  try {
+    const res = await pool.query(text, values);
+    console.log(`User ${userId} added to track ${trackId}`);
+  } catch (err) {
+    console.error(err.stack);
+  }
 }
 
 async function getUserTracks(userId) {
@@ -124,7 +131,7 @@ exports.getTracks = getTracks;
 exports.getTrackName = getTrackName;
 exports.getLearningMaterials = getLearningMaterials;
 exports.postResult = postResult;
-exports.subscribeToTrack = subscribeToTrack;
+exports.addUserToTrack = addUserToTrack;
 exports.getUserTracks = getUserTracks;
 exports.getPretestResult = getPretestResult;
 exports.getNumOfPretestQuestions = getNumOfPretestQuestions;

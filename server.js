@@ -27,7 +27,12 @@ const {
 } = require("./model/db.js");
 
 // Load other services
-const { selectRandomQuestions, selectUserTracks, canUserSkipTrack } = require("./services/learning.js");
+const {
+  selectRandomQuestions,
+  selectUserTracks,
+  canUserSkipTrack,
+  subscribeToTrack,
+} = require("./services/learning.js");
 const { sendEmail } = require("./services/contact.js");
 const { loggedIn } = require("./services/login.js");
 
@@ -234,7 +239,7 @@ app.route("/api/").get(loggedIn, async (req, res) => {
       break;
     case "canskip":
       const permission = await canUserSkipTrack(studentid, track);
-      res.send(permission);
+      res.json(permission);
       break;
     case "getusertracks":
       const usertracks = await selectUserTracks(studentid);
@@ -284,17 +289,25 @@ app.route("/api/contact/").post(async (req, res) => {
 
 app.route("api/results/").put(async (req, res) => {
   const { userid, trackid, test, score } = req.body;
+  // TODO: Fill out API
   // If new resource created
   res.sendStatus(201);
   // If resource updated
   res.sendStatus(200);
 });
 
-app.route("api/subscribe/").put(async (req, res) => {
-  const { userid, trackid } = req.body;
-  res.sendStatus(201);
-  // If resource updated
-  res.sendStatus(200);
+app.route("api/subscribe/").put(loggedIn, async (req, res) => {
+  // TODO: Test API
+  const { trackid } = req.body;
+  const { studentid } = req.user;
+  const success = await subscribeToTrack(studentid, trackid);
+  if (success) {
+    // If new resource created
+    res.sendStatus(201);
+  } else {
+    // If resource not created
+    res.sendStatus(412);
+  }
 });
 
 // Store user sessions as cookies
