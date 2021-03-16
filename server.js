@@ -32,6 +32,7 @@ const {
   selectUserTracks,
   canUserSkipTrack,
   subscribeToTrack,
+  unsubscribeFromTrack,
 } = require("./services/learning.js");
 const { sendEmail } = require("./services/contact.js");
 const { loggedIn } = require("./services/login.js");
@@ -287,7 +288,7 @@ app.route("/api/contact/").post(async (req, res) => {
   }
 });
 
-app.route("api/results/").put(async (req, res) => {
+app.route("/api/results/").put(async (req, res) => {
   const { userid, trackid, test, score } = req.body;
   // TODO: Fill out API
   // If new resource created
@@ -296,16 +297,32 @@ app.route("api/results/").put(async (req, res) => {
   res.sendStatus(200);
 });
 
-app.route("api/subscribe/").put(loggedIn, async (req, res) => {
+app.route("/api/subscribe/").put(loggedIn, async (req, res) => {
   // TODO: Test API
   const { trackid } = req.body;
   const { studentid } = req.user;
   const success = await subscribeToTrack(studentid, trackid);
+  console.log(success); 
   if (success) {
     // If new resource created
     res.sendStatus(201);
   } else {
     // If resource not created
+    res.sendStatus(412);
+  }
+});
+
+app.route("/api/unsubscribe/").put(loggedIn, async (req, res) => {
+  // TODO: Test API
+  const { trackid } = req.body;
+  const { studentid } = req.user;
+  const success = await unsubscribeFromTrack (studentid, trackid);
+  console.log(success); 
+  if (success) {
+    // If unsubscribed
+    res.sendStatus(200);
+  } else {
+    // If nothing to unsubscribe from
     res.sendStatus(412);
   }
 });

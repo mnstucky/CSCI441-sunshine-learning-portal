@@ -1,5 +1,4 @@
 // Load database services
-const { getTestMessageUrl } = require("nodemailer");
 const { Pool } = require("pg");
 const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({
@@ -65,7 +64,8 @@ async function getTrackName(trackId) {
 }
 
 async function getLearningMaterials(trackId) {
-  const text = "SELECT video1, learningtext, video2 FROM learning_tracks WHERE trackid = $1";
+  const text =
+    "SELECT video1, learningtext, video2 FROM learning_tracks WHERE trackid = $1";
   const values = [trackId];
   try {
     const res = await pool.query(text, values);
@@ -73,10 +73,6 @@ async function getLearningMaterials(trackId) {
   } catch (err) {
     console.error(err.stack);
   }
-}
-
-async function postResult() {
-
 }
 
 async function addUserToTrack(userId, trackId) {
@@ -90,6 +86,16 @@ async function addUserToTrack(userId, trackId) {
   }
 }
 
+async function removeUserFromTrack(userId, trackId) {
+  const text = "DELETE FROM learning_results WHERE studentid = $1 AND trackid = $2";
+  const values = [userId, trackId];
+  try {
+    const res = await pool.query(text, values);
+    console.log(`User ${userId} removed from track ${trackId}`);
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
 async function getUserTracks(userId) {
   const text = "SELECT trackid FROM learning_results WHERE studentid = $1";
   const values = [userId];
@@ -102,10 +108,11 @@ async function getUserTracks(userId) {
 }
 
 async function getPretestResult(userId, trackId) {
-  const text = "SELECT pretestscore FROM learning_results WHERE studentid = $1 AND trackid = $2";
+  const text =
+    "SELECT pretestscore FROM learning_results WHERE studentid = $1 AND trackid = $2";
   const values = [userId, trackId];
   try {
-    const res =  await pool.query(text, values);
+    const res = await pool.query(text, values);
     return res.rows;
   } catch (err) {
     console.error(err.stack);
@@ -113,13 +120,34 @@ async function getPretestResult(userId, trackId) {
 }
 
 async function getNumOfPretestQuestions(trackId) {
-  const text = "SELECT pretestquestions FROM learning_tracks WHERE trackid = $1";
+  const text =
+    "SELECT pretestquestions FROM learning_tracks WHERE trackid = $1";
   const values = [trackId];
   try {
     const res = await pool.query(text, values);
     return res.rows;
   } catch (err) {
     console.error(err.stack);
+  }
+}
+
+async function addTestUser() {
+  const text =
+    "INSERT INTO student_info VALUES ('999999', 'studenttestaccount@yahoo.com', '$2b$12$D2sT1ii8.rUBIsyQ6TF8RuaSQHieuzDa7e4kad3MIoSqOLu7M7ksi', 'Testy', 'Tester', 5, 'Test Teacher', 'teachertestaccount@yahoo.com', 'Test School', '123 Test Street', '999-999-9999')";
+  try {
+    const res = await pool.query(text);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function deleteTestUser() {
+  const text =
+    "DELETE FROM student_info WHERE studentid = '999999'";
+  try {
+    const res = await pool.query(text);
+  } catch (err) {
+    console.error(err);
   }
 }
 
@@ -130,8 +158,10 @@ exports.getQuestionById = getQuestionById;
 exports.getTracks = getTracks;
 exports.getTrackName = getTrackName;
 exports.getLearningMaterials = getLearningMaterials;
-exports.postResult = postResult;
 exports.addUserToTrack = addUserToTrack;
+exports.removeUserFromTrack = removeUserFromTrack;
 exports.getUserTracks = getUserTracks;
 exports.getPretestResult = getPretestResult;
 exports.getNumOfPretestQuestions = getNumOfPretestQuestions;
+exports.addTestUser = addTestUser;
+exports.deleteTestUser = deleteTestUser;

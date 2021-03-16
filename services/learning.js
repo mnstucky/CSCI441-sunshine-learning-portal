@@ -1,4 +1,4 @@
-const { getUserTracks, getPretestResult, getNumOfPretestQuestions, addUserToTrack } = require("../model/db");
+const { getUserTracks, getPretestResult, getNumOfPretestQuestions, addUserToTrack, removeUserFromTrack } = require("../model/db");
 
 function selectRandomQuestions(questions, num) {
   if (questions.length < num) {
@@ -40,7 +40,7 @@ async function canUserSkipTrack(userId, trackId) {
 
 async function subscribeToTrack(userId, trackId) {
   const userTracks = await selectUserTracks(userId);
-  const userHasTrack = userTracks.find(id => id === trackid);
+  const userHasTrack = userTracks.find(id => id === Number(trackId));
   if (userHasTrack) {
     return false;
   } else {
@@ -49,7 +49,19 @@ async function subscribeToTrack(userId, trackId) {
   }
 }
 
+async function unsubscribeFromTrack(userId, trackId) {
+   const userTracks = await selectUserTracks(userId);
+  const userHasTrack = userTracks.find(id => id === Number(trackId));
+  if (userHasTrack) {
+    await removeUserFromTrack(userId, trackId);
+    return true;
+  } else {
+    return false;
+  }
+
+}
 exports.selectRandomQuestions = selectRandomQuestions;
 exports.selectUserTracks = selectUserTracks;
 exports.canUserSkipTrack = canUserSkipTrack;
 exports.subscribeToTrack = subscribeToTrack;
+exports.unsubscribeFromTrack = unsubscribeFromTrack;
