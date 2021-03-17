@@ -49,7 +49,7 @@ describe("learning track functionality", function () {
       done();
     });
   });
-  it("a subscribed user should have zero scores", done => {
+  it("a subscribed user should have zero scores", (done) => {
     agent.get("/api?action=getresults&track=3").end((err, res) => {
       expect(res.body.pretestscore).to.equal(0);
       expect(res.body.practicescore1).to.equal(0);
@@ -76,6 +76,26 @@ describe("learning track functionality", function () {
       .send({ userid: "999999", trackid: 3, test: "pretestscore", score: 5 })
       .end((err, res) => {
         expect(res.statusCode).to.equal(201);
+        done();
+      });
+  });
+  it("a user's post should be reflected in the database", (done) => {
+    agent.get("/api?action=getresults&track=3").end((err, res) => {
+      expect(res.body.pretestscore).to.equal(5);
+      expect(res.body.practicescore1).to.equal(0);
+      expect(res.body.practicescore2).to.equal(0);
+      expect(res.body.practicescore3).to.equal(0);
+      expect(res.body.postscore).to.equal(0);
+      done();
+    });
+  });
+  it("a user cannot post a result to a nonexistent test", done => {
+     agent
+      .put("/api/results")
+      .set("content-type", "application/x-www-form-urlencoded")
+      .send({ userid: "999999", trackid: 3, test: "notavalidtest", score: 5 })
+      .end((err, res) => {
+        expect(res.statusCode).to.equal(412);
         done();
       });
   });

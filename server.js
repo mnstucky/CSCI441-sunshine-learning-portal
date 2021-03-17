@@ -295,8 +295,9 @@ app.route("/api/contact/").post(async (req, res) => {
 });
 
 app.route("/api/results/").put(async (req, res) => {
-  const { userid, trackid, test, score } = req.body;
-  const success = await submitResult(userid, trackid, test, score);
+  const { trackid, test, score } = req.body;
+  const { studentid } = req.user;
+  const success = await submitResult(studentid, trackid, test, score);
   if (success) {
     // If new resource created
     res.sendStatus(201);
