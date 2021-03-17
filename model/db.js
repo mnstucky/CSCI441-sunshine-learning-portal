@@ -153,6 +153,17 @@ async function getTestResults(userId, trackId) {
   }
 }
 
+async function getTop10(trackId) {
+  const text = "SELECT studentid, postscore FROM learning_results WHERE trackid = $1 ORDER BY postscore LIMIT 10";
+  const values = [trackId];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
 exports.pool = pool;
 exports.getUserById = getUserById;
 exports.getQuestionsByTrack = getQuestionsByTrack;
@@ -167,3 +178,4 @@ exports.getPretestResult = getPretestResult;
 exports.getNumOfPretestQuestions = getNumOfPretestQuestions;
 exports.addTestResult = addTestResult;
 exports.getTestResults = getTestResults;
+exports.getTop10 = getTop10;

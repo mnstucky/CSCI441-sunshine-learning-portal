@@ -25,6 +25,7 @@ const {
   getTrackName,
   getLearningMaterials,
   getTestResults,
+  getTop10
 } = require("./model/db.js");
 
 // Load other services
@@ -251,6 +252,10 @@ app.route("/api/").get(loggedIn, async (req, res) => {
     case "getresults":
       const results = await getTestResults(studentid, track);
       res.json(results);
+      break;
+    case "gettop10":
+      const top10 = await getTop10(track);
+      res.json(top10);
       break;
     default:
       res.json({});
