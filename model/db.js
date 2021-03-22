@@ -96,6 +96,7 @@ async function removeUserFromTrack(userId, trackId) {
     console.error(err.stack);
   }
 }
+
 async function getUserTracks(userId) {
   const text = "SELECT trackid FROM learning_results WHERE studentid = $1";
   const values = [userId];
@@ -164,6 +165,17 @@ async function getTop10(trackId) {
   }
 }
 
+async function getBadges(userId) {
+  const text = "SELECT badgetype FROM badges WHERE studentid = $1";
+  const values = [userId];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
 exports.pool = pool;
 exports.getUserById = getUserById;
 exports.getQuestionsByTrack = getQuestionsByTrack;
@@ -179,3 +191,4 @@ exports.getNumOfPretestQuestions = getNumOfPretestQuestions;
 exports.addTestResult = addTestResult;
 exports.getTestResults = getTestResults;
 exports.getTop10 = getTop10;
+exports.getBadges = getBadges;

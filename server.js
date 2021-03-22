@@ -25,7 +25,8 @@ const {
   getTrackName,
   getLearningMaterials,
   getTestResults,
-  getTop10
+  getTop10,
+  getBadges,
 } = require("./model/db.js");
 
 // Load other services
@@ -77,7 +78,7 @@ app.set("view engine", "ejs");
 
 // Define routes
 
-app.route("/").get(loggedIn, (req, res) => {
+app.route("/").get(loggedIn, async (req, res) => {
   const {
     firstname,
     lastname,
@@ -89,6 +90,8 @@ app.route("/").get(loggedIn, (req, res) => {
     schooladdress,
     schoolphone,
   } = req.user;
+  badges = await getBadges(studentid);
+  console.log(badges);
   res.render(`${__dirname}/views/profile`, {
     studentname: `${firstname} ${lastname}`,
     studentid,
@@ -98,10 +101,11 @@ app.route("/").get(loggedIn, (req, res) => {
     schoolname,
     schooladdress,
     schoolphone,
+    badges,
   });
 });
 
-app.route("/profile/").get(loggedIn, (req, res) => {
+app.route("/profile/").get(loggedIn, async (req, res) => {
   const {
     firstname,
     lastname,
@@ -113,6 +117,9 @@ app.route("/profile/").get(loggedIn, (req, res) => {
     schooladdress,
     schoolphone,
   } = req.user;
+  getbadges = await getBadges(studentid);
+  badges = getbadges[0].badgetype;
+  //console.log(badges[0].badgetype); 
   res.render(`${__dirname}/views/profile`, {
     studentname: `${firstname} ${lastname}`,
     studentid,
@@ -122,6 +129,7 @@ app.route("/profile/").get(loggedIn, (req, res) => {
     schoolname,
     schooladdress,
     schoolphone,
+    badges,
   });
 });
 
@@ -256,6 +264,10 @@ app.route("/api/").get(loggedIn, async (req, res) => {
     case "gettop10":
       const top10 = await getTop10(track);
       res.json(top10);
+      break;
+    case "getbadges":
+      const badges = await getBadges(studentid);
+      res.json(badges);
       break;
     default:
       res.json({});
