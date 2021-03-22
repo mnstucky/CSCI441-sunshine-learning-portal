@@ -3,7 +3,7 @@
 /* #centerText {padding-left: 10px;} */
 #centerText {text-align: center;}
 
-.p-2 > img {
+.badges > div > img {
     height: 100px;
     width: auto;
 }

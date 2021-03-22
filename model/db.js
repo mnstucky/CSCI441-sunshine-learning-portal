@@ -166,7 +166,7 @@ async function getTop10(trackId) {
 }
 
 async function getBadges(userId) {
-  const text = "SELECT badgetype FROM badges WHERE studentid = $1";
+  const text = "SELECT trackname, badgetype FROM badges WHERE studentid = $1";
   const values = [userId];
   try {
     const res = await pool.query(text, values);

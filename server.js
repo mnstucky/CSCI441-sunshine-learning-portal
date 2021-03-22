@@ -90,8 +90,11 @@ app.route("/").get(loggedIn, async (req, res) => {
     schooladdress,
     schoolphone,
   } = req.user;
-  badges = await getBadges(studentid);
-  console.log(badges);
+  
+  getbadges = await getBadges(studentid);
+  badgeicon = getbadges[0].badgetype;
+  badgetitle = getbadges[0].trackname;
+  
   res.render(`${__dirname}/views/profile`, {
     studentname: `${firstname} ${lastname}`,
     studentid,
@@ -101,7 +104,8 @@ app.route("/").get(loggedIn, async (req, res) => {
     schoolname,
     schooladdress,
     schoolphone,
-    badges,
+    badgeicon,
+    badgetitle,
   });
 });
 
@@ -117,9 +121,11 @@ app.route("/profile/").get(loggedIn, async (req, res) => {
     schooladdress,
     schoolphone,
   } = req.user;
+  
   getbadges = await getBadges(studentid);
-  badges = getbadges[0].badgetype;
-  //console.log(badges[0].badgetype); 
+  badgeicon = getbadges[0].badgetype;
+  badgetitle = getbadges[0].trackname;
+   
   res.render(`${__dirname}/views/profile`, {
     studentname: `${firstname} ${lastname}`,
     studentid,
@@ -129,7 +135,8 @@ app.route("/profile/").get(loggedIn, async (req, res) => {
     schoolname,
     schooladdress,
     schoolphone,
-    badges,
+    badgeicon,
+    badgetitle,
   });
 });
 
