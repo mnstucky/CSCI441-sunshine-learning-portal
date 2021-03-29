@@ -92,8 +92,8 @@ app.route("/").get(loggedIn, async (req, res) => {
   } = req.user;
   
   getbadges = await getBadges(studentid);
-  badgeicon = getbadges[0].badgetype;
-  badgetitle = getbadges[0].trackname;
+  badgeicon = getbadges[0]?.badgetype;
+  badgetitle = getbadges[0]?.trackname;
   
   res.render(`${__dirname}/views/profile`, {
     studentname: `${firstname} ${lastname}`,
@@ -123,8 +123,8 @@ app.route("/profile/").get(loggedIn, async (req, res) => {
   } = req.user;
   
   getbadges = await getBadges(studentid);
-  badgeicon = getbadges[0].badgetype;
-  badgetitle = getbadges[0].trackname;
+  badgeicon = getbadges[0]?.badgetype;
+  badgetitle = getbadges[0]?.trackname;
    
   res.render(`${__dirname}/views/profile`, {
     studentname: `${firstname} ${lastname}`,
