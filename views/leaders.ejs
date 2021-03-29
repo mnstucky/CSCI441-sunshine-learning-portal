@@ -5,12 +5,40 @@
     <title>Leaderboards</title>
     <script src="/public/leaders.js" type="module"></script>
   </head>
+
   <body>
     <%- include('./partials/header.ejs') %>
+
     <main class="container">
+
       <h1 class="text-center">Leaderboards</h1>
-      <h2>Nothing here</h2>
+      <br>
+
+      <!-- dropdown containing tracks enrolled by student -->
+      <h5>Select a track to view the top leaders</h5>
+      <select id="studentTracks"></select>
+      <br><br>
+
+      <!-- table showing leaders -->
+      <h5 id="selectedTrack">The leaders for the track are below</h5>
+      <table id="leadersTable">
+        <thead>
+          <th>Student</th>
+          <th id="rightText">Score</th>
+        </thead>
+        <tbody id="leadersBody">
+          <td id="leaderName"></td>
+          <td id="leaderScore"></td>
+        </tbody>
+      </table>
+      <br><br>
+
+      <!-- User score for track -->
+      <h5 id="userResults">User results for selected track</h5>
+      <br><br>
+
     </main>
+
     <%- include('./partials/footer.ejs') %>
   </body>
 </html>

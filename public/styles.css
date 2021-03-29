@@ -1,9 +1,22 @@
 /* Use this stylesheet for custom CSS */
 
-/* #centerText {padding-left: 10px;} */
-#centerText {text-align: center;}
+#centerText {
+    text-align: center;}
+
+#rightText {
+    text-align: right;
+}
 
 .badges > div > img {
     height: 100px;
     width: auto;
+}
+
+table, th, td {
+    border: 1px solid black;
+    padding: 5px;
+}
+
+table {
+    width: 80%;
 }

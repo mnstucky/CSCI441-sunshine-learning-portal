@@ -27,6 +27,7 @@ const {
   getTestResults,
   getTop10,
   getBadges,
+  getUserTracks,
 } = require("./model/db.js");
 
 // Load other services
@@ -123,8 +124,8 @@ app.route("/profile/").get(loggedIn, async (req, res) => {
   } = req.user;
   
   getbadges = await getBadges(studentid);
-  badgeicon = getbadges[0].badgetype;
-  badgetitle = getbadges[0].trackname;
+  badgeicon = getbadges[0]?.badgetype;
+  badgetitle = getbadges[0]?.trackname;
    
   res.render(`${__dirname}/views/profile`, {
     studentname: `${firstname} ${lastname}`,
@@ -261,7 +262,8 @@ app.route("/api/").get(loggedIn, async (req, res) => {
       res.json(permission);
       break;
     case "getusertracks":
-      const usertracks = await selectUserTracks(studentid);
+      //const usertracks = await selectUserTracks(studentid);
+      const usertracks = await getUserTracks(studentid);
       res.json(usertracks);
       break;
     case "getresults":

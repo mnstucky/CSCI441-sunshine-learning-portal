@@ -98,7 +98,8 @@ async function removeUserFromTrack(userId, trackId) {
 }
 
 async function getUserTracks(userId) {
-  const text = "SELECT trackid FROM learning_results WHERE studentid = $1";
+  //const text = "SELECT trackid FROM learning_results WHERE studentid = $1";
+  const text = "SELECT learning_results.trackid, learning_tracks.trackname FROM learning_results LEFT JOIN learning_tracks ON learning_results.trackid = learning_tracks.trackid WHERE studentid = $1 ORDER BY trackname";
   const values = [userId];
   try {
     const res = await pool.query(text, values);
@@ -155,7 +156,8 @@ async function getTestResults(userId, trackId) {
 }
 
 async function getTop10(trackId) {
-  const text = "SELECT studentid, postscore FROM learning_results WHERE trackid = $1 ORDER BY postscore LIMIT 10";
+  //const text = "SELECT studentid, postscore FROM learning_results WHERE trackid = $1 ORDER BY postscore DESC LIMIT 10";
+  const text = "SELECT learning_results.studentid, learning_results.postscore, student_info.firstname, student_info.lastname FROM learning_results LEFT JOIN student_info ON learning_results.studentid = student_info.studentid WHERE trackid = $1 ORDER BY postscore DESC LIMIT 10";
   const values = [trackId];
   try {
     const res = await pool.query(text, values);
