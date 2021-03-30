@@ -1,3 +1,5 @@
+"use strict";
+
 // Load basic routing services
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -28,16 +30,18 @@ const {
   getTop10,
   getBadges,
   getUserTracks,
+  getAllTestResults,
 } = require("./model/db.js");
 
 // Load other services
 const {
   selectRandomQuestions,
-  selectUserTracks,
   canUserSkipTrack,
   subscribeToTrack,
   unsubscribeFromTrack,
   submitResult,
+  getInProcessTracks,
+  getCompletedTracks,
 } = require("./services/learning.js");
 const { sendEmail } = require("./services/contact.js");
 const { loggedIn } = require("./services/login.js");
@@ -80,34 +84,7 @@ app.set("view engine", "ejs");
 // Define routes
 
 app.route("/").get(loggedIn, async (req, res) => {
-  const {
-    firstname,
-    lastname,
-    studentid,
-    studentemail,
-    teachername,
-    teacheremail,
-    schoolname,
-    schooladdress,
-    schoolphone,
-  } = req.user;
-  
-  getbadges = await getBadges(studentid);
-  badgeicon = getbadges[0]?.badgetype;
-  badgetitle = getbadges[0]?.trackname;
-  
-  res.render(`${__dirname}/views/profile`, {
-    studentname: `${firstname} ${lastname}`,
-    studentid,
-    studentemail,
-    teachername,
-    teacheremail,
-    schoolname,
-    schooladdress,
-    schoolphone,
-    badgeicon,
-    badgetitle,
-  });
+  res.redirect(301, "/profile/");
 });
 
 app.route("/profile/").get(loggedIn, async (req, res) => {
@@ -123,9 +100,13 @@ app.route("/profile/").get(loggedIn, async (req, res) => {
     schoolphone,
   } = req.user;
   
-  getbadges = await getBadges(studentid);
-  badgeicon = getbadges[0]?.badgetype;
-  badgetitle = getbadges[0]?.trackname;
+  const getbadges = await getBadges(studentid);
+  const badgeicon = getbadges[0]?.badgetype;
+  const badgetitle = getbadges[0]?.trackname;
+
+  const inProcessTracks = await getInProcessTracks(studentid); 
+  const completedTracks = await getCompletedTracks(studentid);
+  console.log(completedTracks);
    
   res.render(`${__dirname}/views/profile`, {
     studentname: `${firstname} ${lastname}`,
@@ -138,6 +119,8 @@ app.route("/profile/").get(loggedIn, async (req, res) => {
     schoolphone,
     badgeicon,
     badgetitle,
+    inProcessTracks,
+    completedTracks,
   });
 });
 

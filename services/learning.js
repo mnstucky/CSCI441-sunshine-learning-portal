@@ -6,6 +6,8 @@ const {
   removeUserFromTrack,
   addTestResult,
   getTestResults,
+  getAllTestResults,
+  getTrackName,
 } = require("../model/db");
 
 function selectRandomQuestions(questions, num) {
@@ -92,9 +94,36 @@ async function submitResult(userId, trackId, test, score) {
   }
 }
 
+async function getInProcessTracks(userId) {
+  const userResults = await getAllTestResults(userId);
+  const userTracks = [];
+  for (const result of userResults) {
+    if (result.pretestscore && !result.postscore) {
+      const trackName = await getTrackName(result.trackid);
+      userTracks.push(trackName);
+    }
+  }
+  return userTracks;
+}
+
+async function getCompletedTracks(userId) {
+  const userResults = await getAllTestResults(userId);
+  const userTracks = [];
+  for (const result of userResults) {
+    if (result.postscore) {
+      const trackName = await getTrackName(result.trackid);
+      userTracks.push({track: trackName,
+        score: result.postscore});
+    }
+  }
+  return userTracks;
+}
+
 exports.selectRandomQuestions = selectRandomQuestions;
 exports.selectUserTracks = selectUserTracks;
 exports.canUserSkipTrack = canUserSkipTrack;
 exports.subscribeToTrack = subscribeToTrack;
 exports.unsubscribeFromTrack = unsubscribeFromTrack;
 exports.submitResult = submitResult;
+exports.getInProcessTracks = getInProcessTracks;
+exports.getCompletedTracks = getCompletedTracks;

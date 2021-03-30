@@ -178,6 +178,17 @@ async function getBadges(userId) {
   }
 }
 
+async function getAllTestResults(userId) {
+  const text = "SELECT * FROM learning_results WHERE studentid = $1";
+  const values = [userId];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
 exports.pool = pool;
 exports.getUserById = getUserById;
 exports.getQuestionsByTrack = getQuestionsByTrack;
@@ -194,3 +205,4 @@ exports.addTestResult = addTestResult;
 exports.getTestResults = getTestResults;
 exports.getTop10 = getTop10;
 exports.getBadges = getBadges;
+exports.getAllTestResults = getAllTestResults;

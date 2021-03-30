@@ -48,9 +48,11 @@
 
       <!-- In-Process Learning Track -->
       <div class="row border border-dark my-2">
-        <h4 id="centerText">My In-Process Learning Track</h4>
+        <h4 id="centerText">My In-Process Learning Tracks</h4>
         <div class="col-sm">
-          <p class="row border border-dark mx-1 p-2">In-process Learning Track</p>
+        <% inProcessTracks.forEach(track => { %> 
+            <p class="row border border-dark mx-1 p-2"> <% track %> </p>
+          <% }) %>
         </div>
       </div>
 
@@ -58,10 +60,9 @@
       <div class="row border border-dark my-2">
         <h4 id="centerText">My Completed Learning Tracks</h4>
         <div class="col-sm">
-          <p class="row border border-dark mx-1 my-0 p-2">Learning Track 1</p>
-          <p class="row border border-dark mx-1 my-0 p-2">Learning Track 2</p>
-          <p class="row border border-dark mx-1 my-0 p-2">Learning Track 3</p>
-          <p class="row border border-dark mx-1 mb-1 p-2">Learning Track 4</p>
+        <% for (const result of completedTracks) { %>
+          <p class="row border border-dark mx-1 my-0 p-2"> <%= result.track %> </p>
+          <% } %>
         </div>
       </div>
 
@@ -69,10 +70,9 @@
       <div class="row border border-dark my-2">
         <h4 id="centerText">My Assessment Results</h4>
         <div class="col-sm">
-          <p class="row border border-dark mx-1 my-0 p-2">Assessment Results 1</p>
-          <p class="row border border-dark mx-1 my-0 p-2">Assessment Results 2</p>
-          <p class="row border border-dark mx-1 my-0 p-2">Assessment Results 3</p>
-          <p class="row border border-dark mx-1 mb-1 p-2">Assessment Results 4</p>
+          <% for (const result of completedTracks) { %>
+            <p class="row border border-dark mx-1 my-0 p-2"><%= `${result.track}: ${result.score}` %></p>
+          <% } %>
         </div>
       </div>
 
