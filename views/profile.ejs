@@ -50,9 +50,9 @@
       <div class="row border border-dark my-2">
         <h4 id="centerText">My In-Process Learning Tracks</h4>
         <div class="col-sm">
-        <% inProcessTracks.forEach(track => { %> 
-            <p class="row border border-dark mx-1 p-2"> <% track %> </p>
-          <% }) %>
+        <% for (const track of inProcessTracks) { %> 
+            <p class="row border border-dark mx-1 p-2"> <%= track.name %> </p>
+          <% } %>
         </div>
       </div>
 

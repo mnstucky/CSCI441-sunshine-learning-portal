@@ -106,7 +106,6 @@ app.route("/profile/").get(loggedIn, async (req, res) => {
 
   const inProcessTracks = await getInProcessTracks(studentid); 
   const completedTracks = await getCompletedTracks(studentid);
-  console.log(completedTracks);
    
   res.render(`${__dirname}/views/profile`, {
     studentname: `${firstname} ${lastname}`,
@@ -192,19 +191,24 @@ app.route("/leaders/").get(loggedIn, (req, res) => {
   });
 });
 
-app.route("/learning/").get(loggedIn, (req, res) => {
+app.route("/learning/").get(loggedIn, async (req, res) => {
   const {
     firstname,
     lastname,
     schoolname,
     schooladdress,
     schoolphone,
+    studentid,
   } = req.user;
+  const inProcessTracks = await getInProcessTracks(studentid); 
+  const completedTracks = await getCompletedTracks(studentid);
   res.render(`${__dirname}/views/learning`, {
     studentname: `${firstname} ${lastname}`,
     schoolname,
     schooladdress,
     schoolphone,
+    inProcessTracks,
+    completedTracks,
   });
 });
 
