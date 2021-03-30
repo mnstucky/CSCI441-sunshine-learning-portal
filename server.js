@@ -208,6 +208,22 @@ app.route("/learning/").get(loggedIn, (req, res) => {
   });
 });
 
+app.route("/pretest/").get(loggedIn, (req, res) => {
+  const {
+    firstname,
+    lastname,
+    schoolname,
+    schooladdress,
+    schoolphone,
+  } = req.user;
+  res.render(`${__dirname}/views/track1pre-test`, {
+    studentname: `${firstname} ${lastname}`,
+    schoolname,
+    schooladdress,
+    schoolphone,
+  });
+
+})
 app.route("/logout/").get((req, res) => {
   req.logout();
   res.redirect("/");
