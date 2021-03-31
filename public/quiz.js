@@ -16,13 +16,10 @@ function getChoiceName(index) {
   switch (index) {
     case 0:
       return "choicea";
-      break;
     case 1:
       return "choiceb";
-      break;
     case 2:
       return "choicec";
-      break;
     case 3:
       return "choiced";
   }
@@ -32,13 +29,10 @@ function getChoiceLetter(index) {
   switch (index) {
     case 0:
       return "A";
-      break;
     case 1:
       return "B";
-      break;
     case 2:
       return "C";
-      break;
     case 3:
       return "D";
   }
@@ -47,6 +41,7 @@ function getChoiceLetter(index) {
 async function startTrack(trackId, trackName) {
   // When the user starts a track, hide extra information
   hideDefaultDisplay();
+  document.querySelector(".nextButton").disabled = true;
   // Display the track name in the heading
   displayTrackNameHeading(trackName);
   // Get data for track
@@ -63,6 +58,25 @@ async function startTrack(trackId, trackName) {
   if (results.pretestscore === 0) {
     takePretest(trackId);
   }
+  const canSkip = await fetch(`/api?action=canskip&track=${trackId}`);
+  if (!canSkip) {
+    displayMaterials(trackId);
+  } else {
+  }
+}
+
+function displayMaterials(trackId) {
+  clearScreen();
+  const quizContainer = document.getElementById("quiz");
+  quizContainer.innerHTML =
+    '<iframe width="560" height="315" src="https://youtu.be/bIRwzhhBzEU"> </iframe>';
+}
+
+function clearScreen() {
+  const quizDiv = document.getElementById("quiz");
+  quizDiv.innerHTML = "";
+  const resultsDiv = document.getElementById("results");
+  resultsDiv.innerHTML = "";
 }
 
 function hideDefaultDisplay() {
@@ -109,6 +123,8 @@ function displayQuestions(myQuestions) {
   // finally combine our output list into one string of HTML and put it on the page
   const quizContainer = document.getElementById("quiz");
   quizContainer.innerHTML = output.join("");
+  const nextButton = document.querySelector(".nextButton");
+  nextButton.classList.remove("d-none");
 }
 
 async function takePretest(trackId) {
@@ -141,6 +157,11 @@ async function takePretest(trackId) {
       }),
       body: JSON.stringify(dataToPut),
     });
+    const nextButton = document.querySelector(".nextButton");
+    nextButton.disabled = false;
+    nextButton.addEventListener("click", (event) => {
+      displayMaterials(trackId);
+    });
   });
 }
 
@@ -169,7 +190,7 @@ function gradeTest(myQuestions) {
 
 function displayResults(numCorrect) {
   const resultsContainer = document.getElementById("results");
-  resultsContainer.innerText = `You got ${numCorrect} correct answers.`;
+  resultsContainer.innerHTML = `<p>You got ${numCorrect} correct answers.</p>`;
 }
 
 function showResults() {
