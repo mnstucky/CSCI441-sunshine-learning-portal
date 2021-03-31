@@ -50,7 +50,8 @@ const { loggedIn } = require("./services/login.js");
 app.use("/public", express.static("public"));
 
 // Parse the body of get/post requests
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.urlencoded());
 
 // Setup user authentication logic
 app.use(

@@ -84,13 +84,15 @@ async function getRandomQuestions(trackId) {
 }
 
 function displayQuestions(myQuestions) {
-// variable to store the HTML output
+  // variable to store the HTML output
   const output = [];
   myQuestions.forEach((currentQuestion, questionNumber) => {
     const answers = [];
     for (let i = 0; i < 4; ++i) {
       const currentAnswer = `<label>
-              <input type="radio" name="question${questionNumber}" id="${getChoiceLetter(i)}">
+              <input type="radio" name="question${questionNumber}" id="${getChoiceLetter(
+        i
+      )}">
               ${getChoiceLetter(i)} :
               ${currentQuestion[getChoiceName(i)]}
             </label>`;
@@ -111,7 +113,7 @@ function displayQuestions(myQuestions) {
 
 async function takePretest(trackId) {
   const myQuestions = await getRandomQuestions(trackId);
-  // myQuestions takes the form of an array of objects, such as: 
+  // myQuestions takes the form of an array of objects, such as:
   // { answer: "C"
   // choicea: "Cara ordered 7 pizza for her birthday party. Her parents ate 1/2 of a pizza before the party. How much pizza is left for the party?"
   // choiceb: "Walt has 7 hamsters. Each hamster weighs 1/2 kilogram. What is the total weight of the hamsters?"
@@ -122,8 +124,23 @@ async function takePretest(trackId) {
   // trackid: 4 }
   displayQuestions(myQuestions);
   const submitButton = document.querySelector(".submitButton");
-  submitButton.addEventListener("click", (event) => {
-    gradeTest(myQuestions);
+  let correctAnswers = 0;
+  submitButton.addEventListener("click", async (event) => {
+    correctAnswers = gradeTest(myQuestions);
+    displayResults(correctAnswers);
+    const dataToPut = {
+      trackid: trackId,
+      test: "pretestscore",
+      score: correctAnswers,
+    };
+    const putResponse = await fetch("/api/results/", {
+      credentials: "same-origin",
+      method: "PUT",
+      headers: new Headers({
+        "Content-Type": "application/json",
+      }),
+      body: JSON.stringify(dataToPut),
+    });
   });
 }
 
@@ -131,7 +148,6 @@ function gradeTest(myQuestions) {
   let numCorrect = 0;
   let currentQuestion = 0;
   const allAnswerSets = document.querySelectorAll(".answers");
-  console.log(allAnswerSets);
   for (const answerSet of allAnswerSets) {
     const correctAnswerLetter = myQuestions[currentQuestion].answer;
     for (const possibleAnswer of answerSet.children) {
@@ -140,13 +156,20 @@ function gradeTest(myQuestions) {
       if (correctAnswerLetter === possibleAnswerLetter) {
         if (radioButton.checked) {
           numCorrect += 1;
+          possibleAnswer.style.color = "lightgreen";
         } else {
+          possibleAnswer.style.color = "red";
         }
       }
     }
     currentQuestion += 1;
   }
-  alert(numCorrect);
+  return numCorrect;
+}
+
+function displayResults(numCorrect) {
+  const resultsContainer = document.getElementById("results");
+  resultsContainer.innerText = `You got ${numCorrect} correct answers.`;
 }
 
 function showResults() {
@@ -180,6 +203,3 @@ function showResults() {
   // show number of correct answers out of total
   resultsContainer.innerHTML = `${numCorrect} out of ${myQuestions.length}`;
 }
-
-// Event listeners
-submitButton.addEventListener("click", showResults);

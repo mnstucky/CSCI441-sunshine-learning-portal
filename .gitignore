@@ -106,3 +106,4 @@ dist
 # VS Code and WebStorm
 .vs/
 .idea/
+.vscode/
