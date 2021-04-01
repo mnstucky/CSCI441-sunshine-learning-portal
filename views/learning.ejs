@@ -10,12 +10,14 @@
 
     <main class="container">
       <h1 class="text-center">My Learning</h1>
+      <br>
       <h2></h2>
       <div id="materials"></div>
       <div id="quiz"></div>
       <div id="results"></div>
       <button class="d-none nextButton">Next</button>
       <div id="defaultDisplay">
+
       <!-- In-Process Learning Track -->
       <div class="row border border-dark my-2">
         <h4 id="centerText">My In-Process Learning Tracks</h4>
@@ -31,7 +33,7 @@
         <h4 id="centerText">My Completed Learning Tracks</h4>
         <div class="col-sm">
         <% for (const result of completedTracks) { %>
-          <p class="row border border-dark mx-1 my-0 p-2"> <%= result.track %> </p>
+          <p class="row border border-dark mx-1 p-2"> <%= result.track %> </p>
           <% } %>
         </div>
       </div>
@@ -41,7 +43,7 @@
         <h4 id="centerText">My Assessment Results</h4>
         <div class="col-sm">
           <% for (const result of completedTracks) { %>
-            <p class="row border border-dark mx-1 my-0 p-2"><%= `${result.track}: ${100 * result.score / 5}%` %></p>
+            <p class="row border border-dark mx-1 p-2"><%= `${result.track}: ${100 * result.score / 5}%` %></p>
           <% } %>
         </div>
       </div>
@@ -50,10 +52,8 @@
       <div class="row border border-dark my-2">
         <h4 id="centerText">Additional Resources</h4>
         <div class="col-sm">
-          <p class="row border border-dark mx-1 my-0 p-2"><a href="https://www.khanacademy.org/math/cc-fifth-grade-math">Khan Academy</a></p>
-          <p class="row border border-dark mx-1 my-0 p-2"><a href="">Additional Resource</a></p>
-          <p class="row border border-dark mx-1 my-0 p-2"><a href="">Additional Resource</a></p>
-          <p class="row border border-dark mx-1 mb-1 p-2"><a href="">Additional Resource</a></p>
+          <p class="row border border-dark mx-1 p-2"><a href="https://www.khanacademy.org/math/cc-fifth-grade-math">Khan Academy</a></p>
+          <p class="row border border-dark mx-1 p-2"><a href="https://www.mathsisfun.com/index.htm">Math is Fun</a></p>
         </div>
       </div>
 

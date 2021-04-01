@@ -10,6 +10,7 @@
     
     <main class="container">
       <h1 class="text-center">My Profile</h1>
+      <br>
       <div class="row">
         <!-- My Personal Info -->
         <div class="col-sm col-md border border-dark me-1 my-1">
@@ -61,7 +62,7 @@
         <h4 id="centerText">My Completed Learning Tracks</h4>
         <div class="col-sm">
         <% for (const result of completedTracks) { %>
-          <p class="row border border-dark mx-1 my-0 p-2"> <%= result.track %> </p>
+          <p class="row border border-dark mx-1 p-2"> <%= result.track %> </p>
           <% } %>
         </div>
       </div>
@@ -71,7 +72,7 @@
         <h4 id="centerText">My Assessment Results</h4>
         <div class="col-sm">
           <% for (const result of completedTracks) { %>
-            <p class="row border border-dark mx-1 my-0 p-2"><%= `${result.track}: ${100 * result.score / 5}%` %></p>
+            <p class="row border border-dark mx-1 p-2"><%= `${result.track}: ${100 * result.score / 5}%` %></p>
           <% } %>
         </div>
       </div>
