@@ -37,6 +37,7 @@ const {
   addThread,
   addPost,
   addTracker,
+  getPosts,
 } = require("./model/db.js");
 
 // Load other services
@@ -183,7 +184,6 @@ app.route("/discussions/").get(loggedIn, async (req, res) => {
     return { ...thread, firstName: student.firstname, lastName: student.lastname, unreadPostCount, totalPostCount };
   });
   const formattedThreads = await Promise.all(asyncFormattedThreads); 
-  console.log(formattedThreads);
   res.render(`${__dirname}/views/discussions`, {
     studentname: `${firstname} ${lastname}`,
     schoolname,
@@ -218,6 +218,31 @@ app.route("/discussions/createthread").get(loggedIn, async (req, res) => {
     schooladdress,
     schoolphone,
     formattedThreads,
+  });
+});
+
+app.route("/discussions/displaythread").get(loggedIn, async (req, res) => {
+  const {
+    firstname,
+    lastname,
+    schoolname,
+    schooladdress,
+    schoolphone,
+  } = req.user;
+  const { threadId } = req.query;
+  const posts = await getPosts(threadId);
+  const asyncFormattedPosts = posts.map(async post => {
+    const studentId = post.studentid;
+    const student = await getUserById(studentId);
+    return { ...post, firstName: student.firstname, lastName: student.lastname, };
+  });
+  const formattedPosts = await Promise.all(asyncFormattedPosts);
+  res.render(`${__dirname}/views/displaythread`, {
+    studentname: `${firstname} ${lastname}`,
+    schoolname,
+    schooladdress,
+    schoolphone,
+    formattedPosts,
   });
 });
 

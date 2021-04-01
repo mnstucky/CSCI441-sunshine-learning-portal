@@ -33,7 +33,7 @@
               <% for (const thread of formattedThreads) { %>
                 <tr>
                   <td><%= thread.date.toDateString() %>
-                  <td><%= thread.title %></td>
+                  <td><a href=<%=`/discussions/displaythread?threadId=${thread.threadid}`%>><%= thread.title %></a></td>
                   <td><%= `${thread.firstName} ${thread.lastName}` %> </td>
                   <td><%= `${thread.status.charAt(0).toUpperCase()}${thread.status.slice(1)}` %> </td>
                   <td><%= thread.unreadPostCount %> </td>

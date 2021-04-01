@@ -210,6 +210,17 @@ async function getTotalPosts(threadid) {
   }
 }
 
+async function getPosts(threadid) {
+  const text = "SELECT * FROM discussion_post WHERE threadid = $1 ORDER BY createdtime";
+  const values = [threadid];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
 async function getUnreadPostCount(threadid) {
   const text = "SELECT count(*) FROM discussion_post LEFT JOIN discussion_tracker ON cast(discussion_post.studentid AS integer) = discussion_tracker.userid WHERE discussion_post.threadid = $1 AND discussion_post.createdtime < discussion_tracker.viewtime";
   const values = [threadid];
@@ -291,3 +302,4 @@ exports.getUnreadReplyCount = getUnreadReplyCount;
 exports.addThread = addThread;
 exports.addPost = addPost;
 exports.addTracker = addTracker;
+exports.getPosts = getPosts;
