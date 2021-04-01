@@ -30,6 +30,13 @@ const {
   getBadges,
   getUserTracks,
   getAllTestResults,
+  getThreads,
+  getTotalPosts,
+  getUnreadPostCount,
+  getUnreadReplyCount,
+  addThread,
+  addPost,
+  addTracker,
 } = require("./model/db.js");
 
 // Load other services
@@ -281,10 +288,39 @@ app.route("/api/").get(loggedIn, async (req, res) => {
       const badges = await getBadges(studentid);
       res.json(badges);
       break;
+    case "getThreads":
+      const threads = await getThreads();
+      res.json(threads);
+      break;
+    case "getTotalPosts":
+      const postcount = await getTotalPosts(threadid);
+      res.json(postcount);
+      break;
+    case "getUnreadPostCount":
+      const unreadcount = await getUnreadPostCount();
+      res.json(unreadcount);
+      break;    
+    case "getUnreadReplyCount":
+      const unreadreplycount = await getUnreadReplyCount();
+      res.json(unreadreplycount);
+      break;    
+    case "addThread":
+      const addthread = await addThread();
+      res.json(addthread);
+      break;    
+    case "addPost":
+      const addpost = await addPost();
+      res.json(addpost);
+      break;    
+    case "addTracker":
+      const addtracker = await addTracker();
+      res.json(addtracker);
+      break;
     default:
       res.json({});
   }
 });
+
 
 app.route("/api/contact/").post(async (req, res) => {
   const {

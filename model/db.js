@@ -189,6 +189,83 @@ async function getAllTestResults(userId) {
   }
 }
 
+async function getThreads() {
+  const text = "select threadid, DATE(createdtime), studentid, title, status from discussion_thread";
+  try {
+    const res = await pool.query(text);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
+async function getTotalPosts(threadid) {
+  const text = "SELECT count(*) FROM discussion_post WHERE threadid = $1";
+  const values = [threadid];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
+async function getUnreadPostCount(threadid) {
+  const text = "SELECT count(*) FROM discussion_post LEFT JOIN discussion_tracker ON cast(discussion_post.studentid AS integer) = discussion_tracker.userid WHERE threadid = $1 AND discussion_post.createdtime < discussion_tracker.viewtime";
+  const values = [threadid];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
+async function getUnreadReplyCount(threadid) {
+  const text = "SELECT count(*) FROM discussion_post LEFT JOIN discussion_tracker ON cast(discussion_post.studentid AS integer) = discussion_tracker.userid LEFT JOIN discussion_thread ON discussion_thread.threadid = discussion_post.threadid WHERE threadid = $1 AND discussion_post.createdtime < discussion_tracker.viewtime";
+  const values = [threadid];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
+async function addThread(userId, threadTitle) {
+  const text = "INSERT INTO discussion_thread VALUES ((select max(threadid)+1 from discussion_thread), $1, $2, current_timestamp, 'open')";
+  const values = [userId, threadTitle];
+  try {
+    const res = await pool.query(text, values);
+    console.log(`Created new thread`);
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
+async function addPost(userId, threadId, postText) {
+  const text = "INSERT INTO discussion_post VALUES ((select max(postid)+1 from discussion_thread), $1, $2, $3, current_timestamp, current_timestamp)";
+  const values = [userId, threadId, postText];
+  try {
+    const res = await pool.query(text, values);
+    console.log(`Created new post`);
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
+async function addTracker(userId, threadId) {
+  let text = "UPDATE discussion_tracker VALUES ((select max(trackerid)+1 from discussion_tracker), $1, current_timestamp, $2) WHERE userid = $1 AND threadid = $2";
+  text = "INSERT INTO discussion_tracker VALUES ((select max(trackerid)+1 from discussion_tracker), $1, current_timestamp, $2) WHERE NOT EXISTS userid = $1 AND threadid = $2";
+  const values = [userId, threadId];
+  try {
+    const res = await pool.query(text, values);
+    console.log(`Tracker updated`);
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
 exports.pool = pool;
 exports.getUserById = getUserById;
 exports.getQuestionsByTrack = getQuestionsByTrack;
@@ -206,3 +283,10 @@ exports.getTestResults = getTestResults;
 exports.getTop10 = getTop10;
 exports.getBadges = getBadges;
 exports.getAllTestResults = getAllTestResults;
+exports.getThreads = getThreads;
+exports.getTotalPosts = getTotalPosts;
+exports.getUnreadPostCount = getUnreadPostCount;
+exports.getUnreadReplyCount = getUnreadReplyCount;
+exports.addThread = addThread;
+exports.addPost = addPost;
+exports.addTracker = addTracker;
