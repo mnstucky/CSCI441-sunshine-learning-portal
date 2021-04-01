@@ -243,6 +243,7 @@ async function takePostTest(trackId, results) {
   const subHeader = document.querySelector("h2");
   subHeader.innerText = "Post Test";
   if (results.pretestscore === 5) {
+    nextButton.classList.add("d-none");
     const quizDiv = document.querySelector("#quiz");
     quizDiv.innerHTML =
       "<p>Congratulations! Your pretest score qualifies you to skip the post-test. This track will be marked as completed, with a score of 100%.</p>";

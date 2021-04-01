@@ -71,7 +71,7 @@
         <h4 id="centerText">My Assessment Results</h4>
         <div class="col-sm">
           <% for (const result of completedTracks) { %>
-            <p class="row border border-dark mx-1 my-0 p-2"><%= `${result.track}: ${result.score}` %></p>
+            <p class="row border border-dark mx-1 my-0 p-2"><%= `${result.track}: ${100 * result.score / 5}%` %></p>
           <% } %>
         </div>
       </div>
