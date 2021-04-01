@@ -10,24 +10,9 @@
     <main class="container">
       <h1 class="text-center">Discussion Board</h1>
 
-      <form class="d-flex">
-        <input
-          class="form-control me-2"
-          type="search"
-          placeholder="Search"
-          aria-label="Search"
-        />
-        <button class="btn btn-outline-success" type="submit">
-          Search
-        </button>
-      </form>
-
       <div class="row" id="centerText">
         <div class="col-sm col-md-6 col-lg-4 my-4">
-          <input type="submit" class="btn btn-primary" value="Create Thread"><br>
-        </div>
-        <div class="col-sm col-md-6 col-lg-4 my-4">
-          <input type="submit" class="btn btn-primary" value="Subscribe"><br>
+          <a href="/discussions/createthread/"><button type="button" class="btn btn-primary">Create Thread</button></a>
         </div>
       </div>
 
@@ -41,38 +26,20 @@
                     <th scope="col">Author</th>
                     <th scope="col">Status</th>
                     <th scope="col">Unread Posts</th>
-                    <th scope="col">Unread Replies to Me</th>
                     <th scope="col">Total Posts</th>
                 </tr>
             </thead>
-            <tbody>
-              <tr>
-                  <td>Date</td>
-                  <td>Thread Title</td>
-                  <td>Author</td>
-                  <td>Status</td>
-                  <td>Number</td>
-                  <td>Number</td>
-                  <td>Number</td>
-              </tr>
-              <tr>
-                <td>Date</td>
-                  <td>Thread Title</td>
-                  <td>Author</td>
-                  <td>Status</td>
-                  <td>Number</td>
-                  <td>Number</td>
-                  <td>Number</td>
-            </tr>
-            <tr>
-              <td>Date</td>
-                  <td>Thread Title</td>
-                  <td>Author</td>
-                  <td>Status</td>
-                  <td>Number</td>
-                  <td>Number</td>
-                  <td>Number</td>
-          </tr>
+            <tbody 
+              <% for (const thread of formattedThreads) { %>
+                <tr>
+                  <td><%= thread.date.toDateString() %>
+                  <td><%= thread.title %></td>
+                  <td><%= `${thread.firstName} ${thread.lastName}` %> </td>
+                  <td><%= `${thread.status.charAt(0).toUpperCase()}${thread.status.slice(1)}` %> </td>
+                  <td><%= thread.unreadPostCount %> </td>
+                  <td><%= thread.totalPostCount %> </td>
+                </tr>
+              <% } %>
             </tbody>
         </table>
       </div>

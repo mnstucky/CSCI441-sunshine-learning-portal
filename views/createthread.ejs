@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('./partials/headcontent.ejs') %>
+    <title>Discussions</title>
+  </head>
+  <body>
+    <%- include('./partials/header.ejs') %>
+
+    <main class="container">
+      <h1 class="text-center">Create Thread</h1>
+
+      <form action="/api/createthread/" method="POST">
+        <label for="title">Thread Title:</label>
+        <input type="text" id="title" name="title" />
+        <input type="submit" value="Submit" />
+      </form>
+
+    </main>
+
+    <%- include('./partials/footer.ejs') %>
+  </body>
+</html>

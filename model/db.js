@@ -211,7 +211,7 @@ async function getTotalPosts(threadid) {
 }
 
 async function getUnreadPostCount(threadid) {
-  const text = "SELECT count(*) FROM discussion_post LEFT JOIN discussion_tracker ON cast(discussion_post.studentid AS integer) = discussion_tracker.userid WHERE threadid = $1 AND discussion_post.createdtime < discussion_tracker.viewtime";
+  const text = "SELECT count(*) FROM discussion_post LEFT JOIN discussion_tracker ON cast(discussion_post.studentid AS integer) = discussion_tracker.userid WHERE discussion_post.threadid = $1 AND discussion_post.createdtime < discussion_tracker.viewtime";
   const values = [threadid];
   try {
     const res = await pool.query(text, values);
@@ -238,6 +238,7 @@ async function addThread(userId, threadTitle) {
   try {
     const res = await pool.query(text, values);
     console.log(`Created new thread`);
+    return res;
   } catch (err) {
     console.error(err.stack);
   }
