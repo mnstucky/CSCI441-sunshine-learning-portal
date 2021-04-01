@@ -21,6 +21,11 @@ async function startTrack(trackId, trackName) {
   // Get data for track
   const rawResults = await fetch(`/api?action=getresults&track=${trackId}`);
   const results = await rawResults.json();
+  const rawlearningMaterials = await fetch(
+    `/api/?action=getlearningmaterials&track=${trackId}`
+  );
+  let learningMaterials = await rawlearningMaterials.json();
+  learningMaterials = learningMaterials[0];
   // results takes the form:
   // { postscore: 0
   // practicescore1: 0
@@ -30,11 +35,13 @@ async function startTrack(trackId, trackName) {
   // studentid: "123456"
   // trackid: 4 }
   if (results.pretestscore === 0) {
-    takePretest(trackId);
+    takePretest(trackId, learningMaterials, results);
+  } else {
+    displayFirstMaterials(learningMaterials, trackId, results);
   }
 }
 
-async function takePretest(trackId) {
+async function takePretest(trackId, learningMaterials, results) {
   const subHeader = document.querySelector("h2");
   subHeader.textContent = "Pretest";
   const myQuestions = await getRandomQuestions(trackId);
@@ -48,11 +55,6 @@ async function takePretest(trackId) {
   // questionid: 12
   // trackid: 4 }
   displayQuestions(myQuestions);
-  const rawlearningMaterials = await fetch(
-    `/api/?action=getlearningmaterials&track=${trackId}`
-  );
-  let learningMaterials = await rawlearningMaterials.json();
-  learningMaterials = learningMaterials[0];
   const submitButton = document.querySelector(".submitButton");
   let correctAnswers = 0;
   submitButton.onclick = async (event) => {
@@ -76,7 +78,7 @@ async function takePretest(trackId) {
     nextButton.disabled = false;
     nextButton.onclick = (event) => {
       subHeader.textContent = "Learning Materials";
-      displayFirstMaterials(learningMaterials, trackId);
+      displayFirstMaterials(learningMaterials, trackId, results);
     };
   };
 }
@@ -104,9 +106,10 @@ function gradeTest(myQuestions) {
   return numCorrect;
 }
 
-async function displayFirstMaterials(learningMaterials, trackId) {
+async function displayFirstMaterials(learningMaterials, trackId, results) {
   clearScreen();
   const nextButton = document.querySelector(".nextButton");
+  nextButton.classList.remove("d-none");
   nextButton.disabled = true;
   const myQuestion = await getRandomQuestion(trackId);
   const materialsContainer = document.getElementById("materials");
@@ -116,7 +119,7 @@ async function displayFirstMaterials(learningMaterials, trackId) {
   let correctAnswer;
   submitButton.onclick = async (event) => {
     submitButton.disabled = true;
-    correctAnswer = gradeQuestion(myQuestion); 
+    correctAnswer = gradeQuestion(myQuestion);
     displayResult(correctAnswer);
     const correctAnswers = correctAnswer ? 1 : 0;
     const dataToPut = {
@@ -135,12 +138,12 @@ async function displayFirstMaterials(learningMaterials, trackId) {
     const nextButton = document.querySelector(".nextButton");
     nextButton.disabled = false;
     nextButton.onclick = (event) => {
-      displaySecondMaterials(learningMaterials, trackId);
+      displaySecondMaterials(learningMaterials, trackId, results);
     };
   };
 }
 
-async function displaySecondMaterials(learningMaterials, trackId) {
+async function displaySecondMaterials(learningMaterials, trackId, results) {
   clearScreen();
   const nextButton = document.querySelector(".nextButton");
   nextButton.disabled = true;
@@ -152,7 +155,7 @@ async function displaySecondMaterials(learningMaterials, trackId) {
   let correctAnswer;
   submitButton.onclick = async (event) => {
     submitButton.disabled = true;
-    correctAnswer = gradeQuestion(myQuestion); 
+    correctAnswer = gradeQuestion(myQuestion);
     displayResult(correctAnswer);
     const correctAnswers = correctAnswer ? 1 : 0;
     const dataToPut = {
@@ -171,12 +174,12 @@ async function displaySecondMaterials(learningMaterials, trackId) {
     const nextButton = document.querySelector(".nextButton");
     nextButton.disabled = false;
     nextButton.onclick = (event) => {
-      displayThirdMaterials(learningMaterials, trackId);
+      displayThirdMaterials(learningMaterials, trackId, results);
     };
   };
 }
 
-async function displayThirdMaterials(learningMaterials, trackId) {
+async function displayThirdMaterials(learningMaterials, trackId, results) {
   clearScreen();
   const nextButton = document.querySelector(".nextButton");
   nextButton.disabled = true;
@@ -188,7 +191,7 @@ async function displayThirdMaterials(learningMaterials, trackId) {
   let correctAnswer;
   submitButton.onclick = async (event) => {
     submitButton.disabled = true;
-    correctAnswer = gradeQuestion(myQuestion); 
+    correctAnswer = gradeQuestion(myQuestion);
     displayResult(correctAnswer);
     const correctAnswers = correctAnswer ? 1 : 0;
     const dataToPut = {
@@ -207,7 +210,7 @@ async function displayThirdMaterials(learningMaterials, trackId) {
     const nextButton = document.querySelector(".nextButton");
     nextButton.disabled = false;
     nextButton.onclick = (event) => {
-      takePostTest(trackId);
+      takePostTest(trackId, results);
     };
   };
 }
@@ -233,31 +236,20 @@ function gradeQuestion(question) {
   return correctAnswer;
 }
 
-async function takePostTest(trackId) {
+async function takePostTest(trackId, results) {
   clearScreen();
+  const nextButton = document.querySelector(".nextButton");
+  // nextButton.disabled = true;
   const subHeader = document.querySelector("h2");
   subHeader.innerText = "Post Test";
-  const myQuestions = await getRandomQuestions(trackId);
-  // myQuestions takes the form of an array of objects, such as:
-  // { answer: "C"
-  // choicea: "Cara ordered 7 pizza for her birthday party. Her parents ate 1/2 of a pizza before the party. How much pizza is left for the party?"
-  // choiceb: "Walt has 7 hamsters. Each hamster weighs 1/2 kilogram. What is the total weight of the hamsters?"
-  // choicec: "Jenae has 1/2 kilogram of trail mix. She splits her trail mix evenly between 7 friends. How much trail mix will each friend get?"
-  // choiced: "Jack ordered 7 cupcakes for his class. His parents ate 1/2 of a cupcakes before the school. How many cupcakes are left for the class?"
-  // question: "Which problem can we solve with 1/2 ÷7?"
-  // questionid: 12
-  // trackid: 4 }
-  displayQuestions(myQuestions);
-  const submitButton = document.querySelector(".submitButton");
-  let correctAnswers = 0;
-  submitButton.onclick = async (event) => {
-    submitButton.disabled = true;
-    correctAnswers = gradeTest(myQuestions);
-    displayResults(correctAnswers);
+  if (results.pretestscore === 5) {
+    const quizDiv = document.querySelector("#quiz");
+    quizDiv.innerHTML =
+      "<p>Congratulations! Your pretest score qualifies you to skip the post-test. This track will be marked as completed, with a score of 100%.</p>";
     const dataToPut = {
       trackid: trackId,
       test: "postscore",
-      score: correctAnswers,
+      score: 5,
     };
     const putResponse = await fetch("/api/results/", {
       credentials: "same-origin",
@@ -267,10 +259,40 @@ async function takePostTest(trackId) {
       }),
       body: JSON.stringify(dataToPut),
     });
-    const nextButton = document.querySelector(".nextButton");
-    nextButton.disabled = true;
+  } else {
+    const myQuestions = await getRandomQuestions(trackId);
+    // myQuestions takes the form of an array of objects, such as:
+    // { answer: "C"
+    // choicea: "Cara ordered 7 pizza for her birthday party. Her parents ate 1/2 of a pizza before the party. How much pizza is left for the party?"
+    // choiceb: "Walt has 7 hamsters. Each hamster weighs 1/2 kilogram. What is the total weight of the hamsters?"
+    // choicec: "Jenae has 1/2 kilogram of trail mix. She splits her trail mix evenly between 7 friends. How much trail mix will each friend get?"
+    // choiced: "Jack ordered 7 cupcakes for his class. His parents ate 1/2 of a cupcakes before the school. How many cupcakes are left for the class?"
+    // question: "Which problem can we solve with 1/2 ÷7?"
+    // questionid: 12
+    // trackid: 4 }
+    displayQuestions(myQuestions);
     nextButton.classList.add("d-none");
-  };
+    const submitButton = document.querySelector(".submitButton");
+    let correctAnswers = 0;
+    submitButton.onclick = async (event) => {
+      submitButton.disabled = true;
+      correctAnswers = gradeTest(myQuestions);
+      displayResults(correctAnswers);
+      const dataToPut = {
+        trackid: trackId,
+        test: "postscore",
+        score: correctAnswers,
+      };
+      const putResponse = await fetch("/api/results/", {
+        credentials: "same-origin",
+        method: "PUT",
+        headers: new Headers({
+          "Content-Type": "application/json",
+        }),
+        body: JSON.stringify(dataToPut),
+      });
+    };
+  }
 }
 
 function clearScreen() {
@@ -345,9 +367,7 @@ function displayQuestion(myQuestion) {
   const answers = [];
   for (let i = 0; i < 4; ++i) {
     const currentAnswer = `<label>
-            <input type="radio" name="question0" id="${getChoiceLetter(
-      i
-    )}">
+            <input type="radio" name="question0" id="${getChoiceLetter(i)}">
             ${getChoiceLetter(i)} :
             ${myQuestion[getChoiceName(i)]}
           </label>`;
@@ -371,7 +391,9 @@ function displayResults(numCorrect) {
 
 function displayResult(correctAnswer) {
   const resultsContainer = document.getElementById("results");
-  resultsContainer.innerHTML = correctAnswer ? `<p>You got the question correct!</p>` : `<p>Sorry, wrong answer.</p>`;
+  resultsContainer.innerHTML = correctAnswer
+    ? `<p>You got the question correct!</p>`
+    : `<p>Sorry, wrong answer.</p>`;
 }
 
 function getChoiceName(index) {

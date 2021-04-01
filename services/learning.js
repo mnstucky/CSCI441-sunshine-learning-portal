@@ -17,7 +17,7 @@ function selectRandomQuestions(questions, num) {
   const selectedQuestions = [];
   const usedIndices = [];
   while (selectedQuestions.length < num) {
-    let index = Math.floor(Math.random() * num);
+    let index = Math.floor(Math.random() * questions.length);
     if (usedIndices.includes(index)) {
       continue;
     }
