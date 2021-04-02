@@ -19,12 +19,11 @@ async function loadOpenTracks(studentid) {
   const data = await fetch(`/api?action=getopentracks`);
   const formatted = await data.json();
   console.log(formatted);
-  for (var key in formatted) 
-  {
-      const table = document.getElementById("tracksBody");
-      let tableRow = table.insertRow();
-      let tableUser = tableRow.insertCell(0);
-      tableUser.innerHTML = formatted[key].trackname;
+  for (var key in formatted) {
+    const table = document.getElementById("tracksBody");
+    let tableRow = table.insertRow();
+    let tableUser = tableRow.insertCell(0);
+    tableUser.innerHTML = formatted[key].trackname;
   }
 }
 
@@ -35,22 +34,8 @@ async function startTrack(trackId, trackName) {
   // Display the track name in the heading
   displayTrackNameHeading(trackName);
   // Get data for track
-  const rawResults = await fetch(`/api?action=getresults&track=${trackId}`);
-  const results = await rawResults.json();
-  const rawlearningMaterials = await fetch(
-    `/api/?action=getlearningmaterials&track=${trackId}`
-  );
-  let learningMaterials = await rawlearningMaterials.json();
-  learningMaterials = learningMaterials[0];
-  console.log(results);
-  // results takes the form:
-  // { postscore: 0
-  // practicescore1: 0
-  // practicescore2: 0
-  // practicescore3: 0
-  // pretestscore: 0
-  // studentid: "123456"
-  // trackid: 4 }
+  const results = await getResults(trackId);
+  const learningMaterials = await getLearningMaterials(trackId);
   if (results.practicescore1 == null)
     console.log("user doesn't have practicescore1");
   if (results.pretestscore === 0) {
@@ -61,18 +46,8 @@ async function startTrack(trackId, trackName) {
 }
 
 async function takePretest(trackId, learningMaterials, results) {
-  const subHeader = document.querySelector("h2");
-  subHeader.textContent = "Pretest";
+  setSubheader("Pretest");
   const myQuestions = await getRandomQuestions(trackId);
-  // myQuestions takes the form of an array of objects, such as:
-  // { answer: "C"
-  // choicea: "Cara ordered 7 pizza for her birthday party. Her parents ate 1/2 of a pizza before the party. How much pizza is left for the party?"
-  // choiceb: "Walt has 7 hamsters. Each hamster weighs 1/2 kilogram. What is the total weight of the hamsters?"
-  // choicec: "Jenae has 1/2 kilogram of trail mix. She splits her trail mix evenly between 7 friends. How much trail mix will each friend get?"
-  // choiced: "Jack ordered 7 cupcakes for his class. His parents ate 1/2 of a cupcakes before the school. How many cupcakes are left for the class?"
-  // question: "Which problem can we solve with 1/2 ÷7?"
-  // questionid: 12
-  // trackid: 4 }
   displayQuestions(myQuestions);
   const submitButton = document.querySelector(".submitButton");
   let correctAnswers = 0;
@@ -80,26 +55,167 @@ async function takePretest(trackId, learningMaterials, results) {
     submitButton.disabled = true;
     correctAnswers = gradeTest(myQuestions);
     displayResults(correctAnswers);
-    const dataToPut = {
-      trackid: trackId,
-      test: "pretestscore",
-      score: correctAnswers,
-    };
-    const putResponse = await fetch("/api/results/", {
-      credentials: "same-origin",
-      method: "PUT",
-      headers: new Headers({
-        "Content-Type": "application/json",
-      }),
-      body: JSON.stringify(dataToPut),
-    });
-    const nextButton = document.querySelector(".nextButton");
-    nextButton.disabled = false;
-    nextButton.onclick = (event) => {
-      subHeader.textContent = "Learning Materials";
-      displayFirstMaterials(learningMaterials, trackId, results);
-    };
+    await sendScoreToDatabase(trackId, "pretestscore", correctAnswers);
+    enableNextButton(
+      displayFirstMaterials,
+      learningMaterials,
+      trackId,
+      results
+    );
   };
+}
+
+async function displayFirstMaterials(trackId, learningMaterials, results) {
+  clearScreen();
+  setSubheader("Learning Materials");
+  const nextButton = document.querySelector(".nextButton");
+  nextButton.classList.remove("d-none");
+  nextButton.disabled = true;
+  const myQuestion = await getRandomQuestion(trackId);
+  displayMaterials("video1", learningMaterials);
+  displayQuestion(myQuestion);
+  const submitButton = document.querySelector(".submitButton");
+  let correctAnswer;
+  submitButton.onclick = async (event) => {
+    submitButton.disabled = true;
+    correctAnswer = gradeQuestion(myQuestion);
+    displayResult(correctAnswer);
+    const correctAnswers = correctAnswer ? 1 : 0;
+    await sendScoreToDatabase(trackId, "practicescore1", correctAnswers);
+    enableNextButton(
+      displaySecondMaterials,
+      learningMaterials,
+      trackId,
+      results
+    );
+  };
+}
+
+async function displaySecondMaterials(trackId, learningMaterials, results) {
+  clearScreen();
+  const nextButton = document.querySelector(".nextButton");
+  nextButton.disabled = true;
+  const myQuestion = await getRandomQuestion(trackId);
+  displayMaterials("learningtext", learningMaterials);
+  displayQuestion(myQuestion);
+  const submitButton = document.querySelector(".submitButton");
+  let correctAnswer;
+  submitButton.onclick = async (event) => {
+    submitButton.disabled = true;
+    correctAnswer = gradeQuestion(myQuestion);
+    displayResult(correctAnswer);
+    const correctAnswers = correctAnswer ? 1 : 0;
+    await sendScoreToDatabase(trackId, "practicescore2", correctAnswers);
+    enableNextButton(
+      displayThirdMaterials,
+      learningMaterials,
+      trackId,
+      results
+    );
+  };
+}
+
+async function displayThirdMaterials(trackId, learningMaterials, results) {
+  clearScreen();
+  const nextButton = document.querySelector(".nextButton");
+  nextButton.disabled = true;
+  const myQuestion = await getRandomQuestion(trackId);
+  displayMaterials("video2", learningMaterials);
+  displayQuestion(myQuestion);
+  const submitButton = document.querySelector(".submitButton");
+  let correctAnswer;
+  submitButton.onclick = async (event) => {
+    submitButton.disabled = true;
+    correctAnswer = gradeQuestion(myQuestion);
+    displayResult(correctAnswer);
+    const correctAnswers = correctAnswer ? 1 : 0;
+    await sendScoreToDatabase(trackId, "practicescore3", correctAnswers);
+    enableNextButton(takePostTest, {}, trackId, results);
+  };
+}
+
+async function takePostTest(trackId) {
+  clearScreen();
+  const rawResults = await fetch(`/api?action=getresults&track=${trackId}`);
+  const results = await rawResults.json();
+  const nextButton = document.querySelector(".nextButton");
+  // nextButton.disabled = true;
+  const subHeader = document.querySelector("h2");
+  subHeader.innerText = "Post Test";
+  if (results.pretestscore === 5) {
+    nextButton.classList.add("d-none");
+    const quizDiv = document.querySelector("#quiz");
+    quizDiv.innerHTML =
+      "<p>Congratulations! Your pretest score qualifies you to skip the post-test. This track will be marked as completed, with a score of 100%.</p>";
+    await sendScoreToDatabase(trackId, "postscore", 5);
+  } else {
+    const myQuestions = await getRandomQuestions(trackId);
+    displayQuestions(myQuestions);
+    nextButton.classList.add("d-none");
+    const submitButton = document.querySelector(".submitButton");
+    let correctAnswers = 0;
+    submitButton.onclick = async (event) => {
+      submitButton.disabled = true;
+      correctAnswers = gradeTest(myQuestions);
+      displayResults(correctAnswers);
+      await sendScoreToDatabase(trackId, "postscore", correctAnswers);
+    };
+  }
+}
+
+function gradeQuestion(question) {
+  let correctAnswer = false;
+  const allAnswerSets = document.querySelectorAll(".answers");
+  for (const answerSet of allAnswerSets) {
+    const correctAnswerLetter = question.answer;
+    for (const possibleAnswer of answerSet.children) {
+      const radioButton = possibleAnswer.children[0];
+      const possibleAnswerLetter = radioButton.id;
+      if (correctAnswerLetter === possibleAnswerLetter) {
+        if (radioButton.checked) {
+          correctAnswer = true;
+          possibleAnswer.style.color = "lightgreen";
+        } else {
+          possibleAnswer.style.color = "red";
+        }
+      }
+    }
+  }
+  return correctAnswer;
+}
+
+async function sendScoreToDatabase(trackid, test, score) {
+  const dataToPut = {
+    trackid,
+    test,
+    score,
+  };
+  const putResponse = await fetch("/api/results/", {
+    credentials: "same-origin",
+    method: "PUT",
+    headers: new Headers({
+      "Content-Type": "application/json",
+    }),
+    body: JSON.stringify(dataToPut),
+  });
+}
+
+function displayMaterials(material, learningMaterials) {
+  const materialsContainer = document.getElementById("materials");
+  materialsContainer.innerHTML = learningMaterials[material];
+}
+
+function enableNextButton(callback, learningMaterials, trackId, results) {
+  const nextButton = document.querySelector(".nextButton");
+  nextButton.disabled = false;
+  nextButton.onclick = (event) => {
+    callback(trackId, learningMaterials, results);
+  };
+}
+
+function setSubheader(text) {
+  const subHeader = document.querySelector("h2");
+  subHeader.textContent = text;
 }
 
 function gradeTest(myQuestions) {
@@ -125,196 +241,19 @@ function gradeTest(myQuestions) {
   return numCorrect;
 }
 
-async function displayFirstMaterials(learningMaterials, trackId, results) {
-  clearScreen();
-  const nextButton = document.querySelector(".nextButton");
-  nextButton.classList.remove("d-none");
-  nextButton.disabled = true;
-  const myQuestion = await getRandomQuestion(trackId);
-  const materialsContainer = document.getElementById("materials");
-  materialsContainer.innerHTML = learningMaterials.video1;
-  displayQuestion(myQuestion);
-  const submitButton = document.querySelector(".submitButton");
-  let correctAnswer;
-  submitButton.onclick = async (event) => {
-    submitButton.disabled = true;
-    correctAnswer = gradeQuestion(myQuestion);
-    displayResult(correctAnswer);
-    const correctAnswers = correctAnswer ? 1 : 0;
-    const dataToPut = {
-      trackid: trackId,
-      test: "practicescore1",
-      score: correctAnswers,
-    };
-    const putResponse = await fetch("/api/results/", {
-      credentials: "same-origin",
-      method: "PUT",
-      headers: new Headers({
-        "Content-Type": "application/json",
-      }),
-      body: JSON.stringify(dataToPut),
-    });
-    const nextButton = document.querySelector(".nextButton");
-    nextButton.disabled = false;
-    nextButton.onclick = (event) => {
-      displaySecondMaterials(learningMaterials, trackId, results);
-    };
-  };
-}
-
-async function displaySecondMaterials(learningMaterials, trackId, results) {
-  clearScreen();
-  const nextButton = document.querySelector(".nextButton");
-  nextButton.disabled = true;
-  const myQuestion = await getRandomQuestion(trackId);
-  const materialsContainer = document.getElementById("materials");
-  materialsContainer.innerHTML = learningMaterials.learningtext;
-  displayQuestion(myQuestion);
-  const submitButton = document.querySelector(".submitButton");
-  let correctAnswer;
-  submitButton.onclick = async (event) => {
-    submitButton.disabled = true;
-    correctAnswer = gradeQuestion(myQuestion);
-    displayResult(correctAnswer);
-    const correctAnswers = correctAnswer ? 1 : 0;
-    const dataToPut = {
-      trackid: trackId,
-      test: "practicescore2",
-      score: correctAnswers,
-    };
-    const putResponse = await fetch("/api/results/", {
-      credentials: "same-origin",
-      method: "PUT",
-      headers: new Headers({
-        "Content-Type": "application/json",
-      }),
-      body: JSON.stringify(dataToPut),
-    });
-    const nextButton = document.querySelector(".nextButton");
-    nextButton.disabled = false;
-    nextButton.onclick = (event) => {
-      displayThirdMaterials(learningMaterials, trackId, results);
-    };
-  };
-}
-
-async function displayThirdMaterials(learningMaterials, trackId, results) {
-  clearScreen();
-  const nextButton = document.querySelector(".nextButton");
-  nextButton.disabled = true;
-  const myQuestion = await getRandomQuestion(trackId);
-  const materialsContainer = document.getElementById("materials");
-  materialsContainer.innerHTML = learningMaterials.video2;
-  displayQuestion(myQuestion);
-  const submitButton = document.querySelector(".submitButton");
-  let correctAnswer;
-  submitButton.onclick = async (event) => {
-    submitButton.disabled = true;
-    correctAnswer = gradeQuestion(myQuestion);
-    displayResult(correctAnswer);
-    const correctAnswers = correctAnswer ? 1 : 0;
-    const dataToPut = {
-      trackid: trackId,
-      test: "practicescore3",
-      score: correctAnswers,
-    };
-    const putResponse = await fetch("/api/results/", {
-      credentials: "same-origin",
-      method: "PUT",
-      headers: new Headers({
-        "Content-Type": "application/json",
-      }),
-      body: JSON.stringify(dataToPut),
-    });
-    const nextButton = document.querySelector(".nextButton");
-    nextButton.disabled = false;
-    nextButton.onclick = (event) => {
-      takePostTest(trackId, results);
-    };
-  };
-}
-
-function gradeQuestion(question) {
-  let correctAnswer = false;
-  const allAnswerSets = document.querySelectorAll(".answers");
-  for (const answerSet of allAnswerSets) {
-    const correctAnswerLetter = question.answer;
-    for (const possibleAnswer of answerSet.children) {
-      const radioButton = possibleAnswer.children[0];
-      const possibleAnswerLetter = radioButton.id;
-      if (correctAnswerLetter === possibleAnswerLetter) {
-        if (radioButton.checked) {
-          correctAnswer = true;
-          possibleAnswer.style.color = "lightgreen";
-        } else {
-          possibleAnswer.style.color = "red";
-        }
-      }
-    }
-  }
-  return correctAnswer;
-}
-
-async function takePostTest(trackId) {
-  clearScreen();
+async function getResults(trackId) {
   const rawResults = await fetch(`/api?action=getresults&track=${trackId}`);
   const results = await rawResults.json();
-  const nextButton = document.querySelector(".nextButton");
-  // nextButton.disabled = true;
-  const subHeader = document.querySelector("h2");
-  subHeader.innerText = "Post Test";
-  if (results.pretestscore === 5) {
-    nextButton.classList.add("d-none");
-    const quizDiv = document.querySelector("#quiz");
-    quizDiv.innerHTML =
-      "<p>Congratulations! Your pretest score qualifies you to skip the post-test. This track will be marked as completed, with a score of 100%.</p>";
-    const dataToPut = {
-      trackid: trackId,
-      test: "postscore",
-      score: 5,
-    };
-    const putResponse = await fetch("/api/results/", {
-      credentials: "same-origin",
-      method: "PUT",
-      headers: new Headers({
-        "Content-Type": "application/json",
-      }),
-      body: JSON.stringify(dataToPut),
-    });
-  } else {
-    const myQuestions = await getRandomQuestions(trackId);
-    // myQuestions takes the form of an array of objects, such as:
-    // { answer: "C"
-    // choicea: "Cara ordered 7 pizza for her birthday party. Her parents ate 1/2 of a pizza before the party. How much pizza is left for the party?"
-    // choiceb: "Walt has 7 hamsters. Each hamster weighs 1/2 kilogram. What is the total weight of the hamsters?"
-    // choicec: "Jenae has 1/2 kilogram of trail mix. She splits her trail mix evenly between 7 friends. How much trail mix will each friend get?"
-    // choiced: "Jack ordered 7 cupcakes for his class. His parents ate 1/2 of a cupcakes before the school. How many cupcakes are left for the class?"
-    // question: "Which problem can we solve with 1/2 ÷7?"
-    // questionid: 12
-    // trackid: 4 }
-    displayQuestions(myQuestions);
-    nextButton.classList.add("d-none");
-    const submitButton = document.querySelector(".submitButton");
-    let correctAnswers = 0;
-    submitButton.onclick = async (event) => {
-      submitButton.disabled = true;
-      correctAnswers = gradeTest(myQuestions);
-      displayResults(correctAnswers);
-      const dataToPut = {
-        trackid: trackId,
-        test: "postscore",
-        score: correctAnswers,
-      };
-      const putResponse = await fetch("/api/results/", {
-        credentials: "same-origin",
-        method: "PUT",
-        headers: new Headers({
-          "Content-Type": "application/json",
-        }),
-        body: JSON.stringify(dataToPut),
-      });
-    };
-  }
+  return results;
+}
+
+async function getLearningMaterials(trackId) {
+  const rawlearningMaterials = await fetch(
+    `/api/?action=getlearningmaterials&track=${trackId}`
+  );
+  let learningMaterials = await rawlearningMaterials.json();
+  learningMaterials = learningMaterials[0];
+  return learningMaterials;
 }
 
 function clearScreen() {
