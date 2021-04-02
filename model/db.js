@@ -256,11 +256,12 @@ async function addThread(userId, threadTitle) {
 }
 
 async function addPost(userId, threadId, postText) {
-  const text = "INSERT INTO discussion_post VALUES ((select max(postid)+1 from discussion_thread), $1, $2, $3, current_timestamp, current_timestamp)";
-  const values = [userId, threadId, postText];
+  const text = "INSERT INTO discussion_post VALUES ((select max(postid)+1 from discussion_post), $1, $2, $3, current_timestamp, current_timestamp)";
+  const values = [threadId, userId, postText];
   try {
     const res = await pool.query(text, values);
     console.log(`Created new post`);
+    return res;
   } catch (err) {
     console.error(err.stack);
   }
@@ -273,6 +274,17 @@ async function addTracker(userId, threadId) {
   try {
     const res = await pool.query(text, values);
     console.log(`Tracker updated`);
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
+async function getThreadName(threadId) {
+  const text = "SELECT title FROM discussion_thread WHERE threadid = $1";
+  const values = [threadId];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows[0].title;
   } catch (err) {
     console.error(err.stack);
   }
@@ -303,3 +315,4 @@ exports.addThread = addThread;
 exports.addPost = addPost;
 exports.addTracker = addTracker;
 exports.getPosts = getPosts;
+exports.getThreadName = getThreadName;

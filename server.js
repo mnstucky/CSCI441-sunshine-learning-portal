@@ -29,7 +29,6 @@ const {
   getTop10,
   getBadges,
   getUserTracks,
-  getAllTestResults,
   getThreads,
   getTotalPosts,
   getUnreadPostCount,
@@ -38,6 +37,7 @@ const {
   addPost,
   addTracker,
   getPosts,
+  getThreadName,
 } = require("./model/db.js");
 
 // Load other services
@@ -243,9 +243,39 @@ app.route("/discussions/displaythread").get(loggedIn, async (req, res) => {
     schooladdress,
     schoolphone,
     formattedPosts,
+    threadId,
   });
 });
 
+app.route("/discussions/createpost").get(loggedIn, async (req, res) => {
+  const {
+    firstname,
+    lastname,
+    schoolname,
+    schooladdress,
+    schoolphone,
+  } = req.user;
+  const { threadId } = req.query;
+  const threadName = await getThreadName(threadId);
+  const posts = await getPosts(threadId);
+  const asyncFormattedPosts = posts.map(async post => {
+    const studentId = post.studentid;
+    const student = await getUserById(studentId);
+    return { ...post, firstName: student.firstname, lastName: student.lastname, };
+  });
+  const formattedPosts = await Promise.all(asyncFormattedPosts);
+  console.log(formattedPosts);
+  res.render(`${__dirname}/views/createpost`, {
+    studentname: `${firstname} ${lastname}`,
+    schoolname,
+    schooladdress,
+    schoolphone,
+    threadId,
+    formattedPosts,
+    threadName,
+  });
+
+})
 app.route("/leaders/").get(loggedIn, (req, res) => {
   const {
     firstname,
@@ -386,8 +416,7 @@ app.route("/api/").get(loggedIn, async (req, res) => {
   }
 });
 
-
-app.route("/api/contact/").post(async (req, res) => {
+app.route("/api/contact/").post(loggedIn, async (req, res) => {
   const {
     firstname,
     lastname,
@@ -424,7 +453,7 @@ app.route("/api/contact/").post(async (req, res) => {
   }
 });
 
-app.route("/api/createthread/").post(async (req, res) => {
+app.route("/api/createthread/").post(loggedIn, async (req, res) => {
   const { studentid } = req.user;
   const { title } = req.body;
   const data = await addThread(studentid, title);
@@ -435,7 +464,18 @@ app.route("/api/createthread/").post(async (req, res) => {
   }
 });
 
-app.route("/api/results/").put(async (req, res) => {
+app.route("/api/createpost/").post(loggedIn, async (req, res) => {
+  const { studentid } = req.user;
+  const { posttext, threadid } = req.body;
+  const data = await addPost(studentid, threadid, posttext);
+  if (data) {
+    res.redirect(`/discussions/displaythread?threadId=${threadid}`);
+  } else {
+    res.sendStatus(412);
+  }
+});
+
+app.route("/api/results/").put(loggedIn, async (req, res) => {
   const { trackid, test, score } = req.body;
   const { studentid } = req.user;
   const success = await submitResult(studentid, trackid, test, score);

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('./partials/headcontent.ejs') %>
+    <title>Discussions</title>
+  </head>
+  <body>
+    <%- include('./partials/header.ejs') %>
+
+    <main class="container">
+      <h1 class="text-center">Create Post</h1>
+      <h2 class="text-center">Thread: <%= threadName %> </h2>
+      <form action="/api/createpost/" method="POST">
+        <input type="hidden" id="threadid" name="threadid" value="<%= threadId %>">
+        <label for="posttext">Post Content</label>
+        <textarea id="posttext" name="posttext" rows="4"></textarea>
+        <input type="submit" value="Submit" />
+      </form>
+
+      <!-- Discussion Threads -->
+      <div class="tableHeading table-responsive table-sm">
+        <table class="table table-hover table-striped mb-4">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Author</th>
+              <th scope="col">Content</th>
+            </tr>
+          </thead>
+          <tbody <% for (const post of formattedPosts) { %>
+            <tr>
+              <td><%= post.createdtime.toDateString() %></td>
+              <td><%= `${post.firstName} ${post.lastName}` %></td>
+              <td><%= post.content %></td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <%- include('./partials/footer.ejs') %>
+  </body>
+</html>
