@@ -64,7 +64,7 @@ async function loadLeaders() {
         tableUser.innerHTML = formatted[key].firstname + " " + formatted[key].lastname;
         let tableScore = tableRow.insertCell(1);
         tableScore.style.textAlign = "right";
-        tableScore.innerHTML = formatted[key].postscore;
+        tableScore.innerHTML = `${formatted[key].postscore / 5 * 100}%`;
     }
 
     // show user's score for selected track
@@ -76,7 +76,7 @@ async function loadUserTrackResult(trackName) {
     let track = document.getElementById("studentTracks");
     const data = await fetch ("/api?action=getresults&track=" + track.value);
     const formatted = await data.json();
-    document.getElementById("userResults").innerHTML = "Your score for the " + trackName + " track is " + formatted.postscore;
+    document.getElementById("userResults").innerHTML = "Your score for the " + trackName + " track is " + (formatted.postscore / 5 * 100) + "%";
 }
 
 // reload leader table and user's score when new track is selected
