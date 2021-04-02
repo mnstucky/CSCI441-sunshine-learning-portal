@@ -29,7 +29,6 @@ const {
   getTop10,
   getBadges,
   getUserTracks,
-  getAllTestResults,
   getThreads,
   getTotalPosts,
   getUnreadPostCount,
@@ -38,6 +37,8 @@ const {
   addPost,
   addTracker,
   getOpenTracks,
+  getPosts,
+  getThreadName,
 } = require("./model/db.js");
 
 // Load other services
@@ -52,6 +53,7 @@ const {
 } = require("./services/learning.js");
 const { sendEmail } = require("./services/contact.js");
 const { loggedIn } = require("./services/login.js");
+const { getBadgeInfo } = require("./services/badges.js");
 
 // Serve static files in the public directory as /public/
 app.use("/public", express.static("public"));
@@ -100,34 +102,18 @@ app.route("/profile/").get(loggedIn, async (req, res) => {
     firstname,
     lastname,
     studentid,
-    studentemail,
-    teachername,
-    teacheremail,
-    schoolname,
-    schooladdress,
-    schoolphone,
   } = req.user;
   
-  const getbadges = await getBadges(studentid);
-  const badgeicon = getbadges[0]?.badgetype;
-  const badgetitle = getbadges[0]?.trackname;
-
+  const badgeInfo = await getBadgeInfo(studentid);
   const inProcessTracks = await getInProcessTracks(studentid); 
   const completedTracks = await getCompletedTracks(studentid);
    
   res.render(`${__dirname}/views/profile`, {
     studentname: `${firstname} ${lastname}`,
-    studentid,
-    studentemail,
-    teachername,
-    teacheremail,
-    schoolname,
-    schooladdress,
-    schoolphone,
-    badgeicon,
-    badgetitle,
     inProcessTracks,
     completedTracks,
+    ...badgeInfo,
+    ...req.user,
   });
 });
 
@@ -165,7 +151,7 @@ app.route("/contact/").get(loggedIn, (req, res) => {
   });
 });
 
-app.route("/discussions/").get(loggedIn, (req, res) => {
+app.route("/discussions/").get(loggedIn, async (req, res) => {
   const {
     firstname,
     lastname,
@@ -173,15 +159,109 @@ app.route("/discussions/").get(loggedIn, (req, res) => {
     schooladdress,
     schoolphone,
   } = req.user;
-
+  const threads = await getThreads();
+  const asyncFormattedThreads = threads.map(async thread => {
+    const studentId = thread.studentid;
+    const student = await getUserById(studentId);
+    let unreadPostCount = await getUnreadPostCount(thread.threadid);
+    unreadPostCount = unreadPostCount[0].count;
+    let totalPostCount = await getTotalPosts(thread.threadid);
+    totalPostCount = totalPostCount[0].count;
+    return { ...thread, firstName: student.firstname, lastName: student.lastname, unreadPostCount, totalPostCount };
+  });
+  const formattedThreads = await Promise.all(asyncFormattedThreads); 
   res.render(`${__dirname}/views/discussions`, {
     studentname: `${firstname} ${lastname}`,
     schoolname,
     schooladdress,
     schoolphone,
+    formattedThreads,
   });
 });
 
+app.route("/discussions/createthread").get(loggedIn, async (req, res) => {
+  const {
+    firstname,
+    lastname,
+    schoolname,
+    schooladdress,
+    schoolphone,
+  } = req.user;
+  const threads = await getThreads();
+  const asyncFormattedThreads = threads.map(async thread => {
+    const studentId = thread.studentid;
+    const student = await getUserById(studentId);
+    let unreadPostCount = await getUnreadPostCount(thread.threadid);
+    unreadPostCount = unreadPostCount[0].count;
+    let totalPostCount = await getTotalPosts(thread.threadid);
+    totalPostCount = totalPostCount[0].count;
+    return { ...thread, firstName: student.firstname, lastName: student.lastname, unreadPostCount, totalPostCount };
+  });
+  const formattedThreads = await Promise.all(asyncFormattedThreads); 
+  res.render(`${__dirname}/views/createthread`, {
+    studentname: `${firstname} ${lastname}`,
+    schoolname,
+    schooladdress,
+    schoolphone,
+    formattedThreads,
+  });
+});
+
+app.route("/discussions/displaythread").get(loggedIn, async (req, res) => {
+  const {
+    firstname,
+    lastname,
+    schoolname,
+    schooladdress,
+    schoolphone,
+  } = req.user;
+  const { threadId } = req.query;
+  const posts = await getPosts(threadId);
+  const asyncFormattedPosts = posts.map(async post => {
+    const studentId = post.studentid;
+    const student = await getUserById(studentId);
+    return { ...post, firstName: student.firstname, lastName: student.lastname, };
+  });
+  const formattedPosts = await Promise.all(asyncFormattedPosts);
+  res.render(`${__dirname}/views/displaythread`, {
+    studentname: `${firstname} ${lastname}`,
+    schoolname,
+    schooladdress,
+    schoolphone,
+    formattedPosts,
+    threadId,
+  });
+});
+
+app.route("/discussions/createpost").get(loggedIn, async (req, res) => {
+  const {
+    firstname,
+    lastname,
+    schoolname,
+    schooladdress,
+    schoolphone,
+  } = req.user;
+  const { threadId } = req.query;
+  const threadName = await getThreadName(threadId);
+  const posts = await getPosts(threadId);
+  const asyncFormattedPosts = posts.map(async post => {
+    const studentId = post.studentid;
+    const student = await getUserById(studentId);
+    return { ...post, firstName: student.firstname, lastName: student.lastname, };
+  });
+  const formattedPosts = await Promise.all(asyncFormattedPosts);
+  console.log(formattedPosts);
+  res.render(`${__dirname}/views/createpost`, {
+    studentname: `${firstname} ${lastname}`,
+    schoolname,
+    schooladdress,
+    schoolphone,
+    threadId,
+    formattedPosts,
+    threadName,
+  });
+
+})
 app.route("/leaders/").get(loggedIn, (req, res) => {
   const {
     firstname,
@@ -246,7 +326,7 @@ app.route("/logout/").get((req, res) => {
 // Define API routes
 
 app.route("/api/").get(loggedIn, async (req, res) => {
-  const { action, num, track, id } = req.query;
+  const { action, num, track, id, threadid } = req.query;
   const { studentid } = req.user;
   switch (action) {
     case "getquestions":
@@ -300,7 +380,7 @@ app.route("/api/").get(loggedIn, async (req, res) => {
       res.json(postcount);
       break;
     case "getUnreadPostCount":
-      const unreadcount = await getUnreadPostCount();
+      const unreadcount = await getUnreadPostCount(threadid);
       res.json(unreadcount);
       break;    
     case "getUnreadReplyCount":
@@ -328,8 +408,7 @@ app.route("/api/").get(loggedIn, async (req, res) => {
   }
 });
 
-
-app.route("/api/contact/").post(async (req, res) => {
+app.route("/api/contact/").post(loggedIn, async (req, res) => {
   const {
     firstname,
     lastname,
@@ -366,7 +445,29 @@ app.route("/api/contact/").post(async (req, res) => {
   }
 });
 
-app.route("/api/results/").put(async (req, res) => {
+app.route("/api/createthread/").post(loggedIn, async (req, res) => {
+  const { studentid } = req.user;
+  const { title } = req.body;
+  const data = await addThread(studentid, title);
+  if (data) {
+    res.redirect("/discussions/");
+  } else {
+    res.sendStatus(412);
+  }
+});
+
+app.route("/api/createpost/").post(loggedIn, async (req, res) => {
+  const { studentid } = req.user;
+  const { posttext, threadid } = req.body;
+  const data = await addPost(studentid, threadid, posttext);
+  if (data) {
+    res.redirect(`/discussions/displaythread?threadId=${threadid}`);
+  } else {
+    res.sendStatus(412);
+  }
+});
+
+app.route("/api/results/").put(loggedIn, async (req, res) => {
   const { trackid, test, score } = req.body;
   const { studentid } = req.user;
   const success = await submitResult(studentid, trackid, test, score);

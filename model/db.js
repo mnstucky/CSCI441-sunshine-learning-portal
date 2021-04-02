@@ -210,8 +210,19 @@ async function getTotalPosts(threadid) {
   }
 }
 
+async function getPosts(threadid) {
+  const text = "SELECT * FROM discussion_post WHERE threadid = $1 ORDER BY createdtime";
+  const values = [threadid];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
 async function getUnreadPostCount(threadid) {
-  const text = "SELECT count(*) FROM discussion_post LEFT JOIN discussion_tracker ON cast(discussion_post.studentid AS integer) = discussion_tracker.userid WHERE threadid = $1 AND discussion_post.createdtime < discussion_tracker.viewtime";
+  const text = "SELECT count(*) FROM discussion_post LEFT JOIN discussion_tracker ON cast(discussion_post.studentid AS integer) = discussion_tracker.userid WHERE discussion_post.threadid = $1 AND discussion_post.createdtime < discussion_tracker.viewtime";
   const values = [threadid];
   try {
     const res = await pool.query(text, values);
@@ -238,17 +249,19 @@ async function addThread(userId, threadTitle) {
   try {
     const res = await pool.query(text, values);
     console.log(`Created new thread`);
+    return res;
   } catch (err) {
     console.error(err.stack);
   }
 }
 
 async function addPost(userId, threadId, postText) {
-  const text = "INSERT INTO discussion_post VALUES ((select max(postid)+1 from discussion_thread), $1, $2, $3, current_timestamp, current_timestamp)";
-  const values = [userId, threadId, postText];
+  const text = "INSERT INTO discussion_post VALUES ((select max(postid)+1 from discussion_post), $1, $2, $3, current_timestamp, current_timestamp)";
+  const values = [threadId, userId, postText];
   try {
     const res = await pool.query(text, values);
     console.log(`Created new post`);
+    return res;
   } catch (err) {
     console.error(err.stack);
   }
@@ -278,6 +291,16 @@ async function getOpenTracks(userId) {
   }
 }
 
+async function getThreadName(threadId) {
+  const text = "SELECT title FROM discussion_thread WHERE threadid = $1";
+  const values = [threadId];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows[0].title;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
 
 exports.pool = pool;
 exports.getUserById = getUserById;
@@ -304,3 +327,5 @@ exports.addThread = addThread;
 exports.addPost = addPost;
 exports.addTracker = addTracker;
 exports.getOpenTracks = getOpenTracks;
+exports.getPosts = getPosts;
+exports.getThreadName = getThreadName;

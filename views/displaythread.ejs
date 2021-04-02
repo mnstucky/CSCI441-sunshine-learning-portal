@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('./partials/headcontent.ejs') %>
+    <title>Discussions</title>
+  </head>
+  <body>
+    <%- include('./partials/header.ejs') %>
+
+    <main class="container">
+      <h1 class="text-center">Thread</h1>
+
+      <div class="row" id="centerText">
+        <div class="col-sm col-md-6 col-lg-4 my-4">
+          <a href=<%= `/discussions/createpost?threadId=${threadId}` %> button type="button" class="btn btn-primary">Create Post</button></a>
+        </div>
+      </div>
+
+      <!-- Discussion Threads -->
+      <div class="tableHeading table-responsive table-sm">
+        <table class="table table-hover table-striped mb-4">
+            <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Content</th>
+                </tr>
+            </thead>
+            <tbody 
+                <% for (const post of formattedPosts) { %>
+                    <tr>
+                        <td><%= post.createdtime.toDateString() %></td>
+                        <td><%= `${post.firstName} ${post.lastName}` %></td>
+                        <td><%= post.content %></td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+      </div>
+
+
+
+    </main>
+
+    <%- include('./partials/footer.ejs') %>
+  </body>
+</html>

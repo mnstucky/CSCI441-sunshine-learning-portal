@@ -64,7 +64,7 @@ async function loadLeaders() {
         tableUser.innerHTML = formatted[key].firstname + " " + formatted[key].lastname;
         let tableScore = tableRow.insertCell(1);
         tableScore.style.textAlign = "right";
-        tableScore.innerHTML = (formatted[key].postscore / 5 * 100) + "%";
+        tableScore.innerHTML = `${formatted[key].postscore / 5 * 100}%`;
     }
 
     // show user's score for selected track

@@ -18,14 +18,13 @@
       <button class="d-none nextButton">Next</button>
       <div id="defaultDisplay">
 
-        <!-- In-Process Learning Track -->
-        <div class="row border border-dark my-2">
-          <h4 id="centerText">My In-Process Learning Tracks</h4>
-          <div class="col-sm">
-          <% for (const track of inProcessTracks) { %> 
-              <p id=<%=`${track.trackid}`%> class="row mx-1 startTrack"> <%= track.name %> </p>
-            <% } %>
-          </div>
+      <!-- In-Process Learning Track -->
+      <div class="row border border-dark my-2">
+        <h4 id="centerText">My In-Process Learning Tracks</h4>
+        <div class="col-sm">
+        <% for (const track of inProcessTracks) { %> 
+            <button id=<%=`${track.trackid}`%> class="row mx-1 startTrack"> <%= track.name %> </button>
+          <% } %>
         </div>
 
         <!-- Available Learning Tracks -->
