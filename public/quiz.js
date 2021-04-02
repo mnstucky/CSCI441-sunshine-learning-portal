@@ -1,6 +1,8 @@
+//const { addUserToTrack } = require("../model/db");
+
 document.addEventListener("readystatechange", (e) => {
   if (e.target.readyState === "complete") {
-    loadOpenTracks("123456");
+    loadOpenTracks();
     const quizButtons = document
       .querySelectorAll(".startTrack")
       .forEach((button) => {
@@ -13,19 +15,33 @@ document.addEventListener("readystatechange", (e) => {
   }
 });
 
-async function loadOpenTracks(studentid) {
+async function loadOpenTracks() {
   // pull data for open tracks
-  console.log(studentid);
   const data = await fetch(`/api?action=getopentracks`);
   const formatted = await data.json();
-  console.log(formatted);
   for (var key in formatted) {
     const table = document.getElementById("tracksBody");
     let tableRow = table.insertRow();
     let tableUser = tableRow.insertCell(0);
     tableUser.innerHTML = formatted[key].trackname;
+    tableRow.addEventListener("click", function() {
+      subscribeUserToTrack(formatted[key].trackid);
+    });
   }
 }
+
+async function subscribeUserToTrack(trackid){
+  if (confirm("Would you like to subscribe to the selected tracK?")) {
+    const data = await fetch(`/api?action=adduserToTrack`);
+    let studentid = '123456';
+    let track = trackid;
+    //const data = await fetch(`/api?action=adduserToTrack&studentid=${studentid}&trackid=${track}`);
+    location.reload();
+  } else {
+      // do nothing
+  }
+}
+
 
 async function startTrack(trackId, trackName) {
   // When the user starts a track, hide extra information
@@ -36,13 +52,18 @@ async function startTrack(trackId, trackName) {
   // Get data for track
   const results = await getResults(trackId);
   const learningMaterials = await getLearningMaterials(trackId);
-  if (results.practicescore1 == null)
-    console.log("user doesn't have practicescore1");
-  if (results.pretestscore === 0) {
+  if (results.pretestscore == null) {
     takePretest(trackId, learningMaterials, results);
+  } else if (results.practicescore1 == null) {
+    displayFirstMaterials(trackId, learningMaterials, results);
+  } else if (results.practicescore2 == null) {
+    displaySecondMaterials(trackId, learningMaterials, results);
+  } else if (results.practicescore3 == null) {
+    displayThirdMaterials(trackId, learningMaterials, results);
   } else {
-    displayFirstMaterials(learningMaterials, trackId, results);
+    takePostTest(trackId);
   }
+
 }
 
 async function takePretest(trackId, learningMaterials, results) {
@@ -69,6 +90,7 @@ async function displayFirstMaterials(trackId, learningMaterials, results) {
   clearScreen();
   setSubheader("Learning Materials");
   const nextButton = document.querySelector(".nextButton");
+  nextButton.disabled = false;
   nextButton.classList.remove("d-none");
   nextButton.disabled = true;
   const myQuestion = await getRandomQuestion(trackId);
@@ -94,6 +116,8 @@ async function displayFirstMaterials(trackId, learningMaterials, results) {
 async function displaySecondMaterials(trackId, learningMaterials, results) {
   clearScreen();
   const nextButton = document.querySelector(".nextButton");
+  nextButton.disabled = false;
+  nextButton.classList.remove("d-none");
   nextButton.disabled = true;
   const myQuestion = await getRandomQuestion(trackId);
   displayMaterials("learningtext", learningMaterials);
@@ -118,6 +142,8 @@ async function displaySecondMaterials(trackId, learningMaterials, results) {
 async function displayThirdMaterials(trackId, learningMaterials, results) {
   clearScreen();
   const nextButton = document.querySelector(".nextButton");
+  nextButton.disabled = false;
+  nextButton.classList.remove("d-none");
   nextButton.disabled = true;
   const myQuestion = await getRandomQuestion(trackId);
   displayMaterials("video2", learningMaterials);

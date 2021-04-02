@@ -38,6 +38,7 @@ const {
   getOpenTracks,
   getPosts,
   getThreadName,
+  addUserToTrack,
 } = require("./model/db.js");
 
 // Load other services
@@ -288,9 +289,13 @@ app.route("/api/").get(loggedIn, async (req, res) => {
       res.json(addtracker);
       break;
     case "getopentracks":
-        const opentracks = await getOpenTracks(studentid);
-        res.json(opentracks);
-        break;
+      const opentracks = await getOpenTracks(studentid);
+      res.json(opentracks);
+      break;
+    case "adduserToTrack":
+      const addTrack = await addUserToTrack(studentid, 2);
+      res.json(addTrack);
+      break;
     default:
       res.json({});
   }

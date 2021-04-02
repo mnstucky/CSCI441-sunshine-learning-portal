@@ -60,11 +60,12 @@ async function loadLeaders() {
         const table = document.getElementById("leadersBody");
         let tableRow = table.insertRow();
         let tableUser = tableRow.insertCell(0);
-        tableUser.style.width = '80%';
+        //tableUser.style.width = '80%';
         tableUser.innerHTML = formatted[key].firstname + " " + formatted[key].lastname;
+        tableUser.id = 'leaderName';
         let tableScore = tableRow.insertCell(1);
-        tableScore.style.textAlign = "right";
         tableScore.innerHTML = `${formatted[key].postscore / 5 * 100}%`;
+        tableScore.id = 'leaderScore';
     }
 
     // show user's score for selected track

@@ -5,6 +5,7 @@
 
 #rightText {
     text-align: right;
+    padding: 5px;
 }
 
 .badges > div > img {
@@ -12,11 +13,25 @@
     width: auto;
 }
 
-table, th, td {
+#leadersTable {
     border: 1px solid black;
     padding: 5px;
+    width: 80%;
 }
 
-table {
+#leaderName {
+    border: 1px solid black;
+    padding: 5px;
     width: 80%;
+}
+
+#leaderScore {
+    border: 1px solid black;
+    padding: 5px;
+    text-align: right;
+}
+
+.leadersHead {
+    border: 1px solid black;
+    padding: 5px;
 }

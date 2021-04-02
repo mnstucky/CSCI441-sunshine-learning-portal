@@ -76,7 +76,7 @@ async function getLearningMaterials(trackId) {
 }
 
 async function addUserToTrack(userId, trackId) {
-  const text = "INSERT INTO learning_results VALUES ($1, $2, 0, 0, 0, 0, 0)";
+  const text = "INSERT INTO learning_results VALUES ($1, $2)";
   const values = [userId, trackId];
   try {
     const res = await pool.query(text, values);
@@ -157,7 +157,7 @@ async function getTestResults(userId, trackId) {
 
 async function getTop10(trackId) {
   //const text = "SELECT studentid, postscore FROM learning_results WHERE trackid = $1 ORDER BY postscore DESC LIMIT 10";
-  const text = "SELECT learning_results.studentid, learning_results.postscore, student_info.firstname, student_info.lastname FROM learning_results LEFT JOIN student_info ON learning_results.studentid = student_info.studentid WHERE trackid = $1 ORDER BY postscore DESC, firstname, lastname LIMIT 10";
+  const text = "SELECT learning_results.studentid, learning_results.postscore, student_info.firstname, student_info.lastname FROM learning_results LEFT JOIN student_info ON learning_results.studentid = student_info.studentid WHERE trackid = $1 AND learning_results.postscore IS NOT NULL ORDER BY postscore DESC, firstname, lastname LIMIT 10";
   const values = [trackId];
   try {
     const res = await pool.query(text, values);
