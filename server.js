@@ -18,7 +18,6 @@ const flash = require("connect-flash");
 
 // Load DB services
 const {
-  pool,
   getUserById,
   getQuestionsByTrack,
   getQuestionById,
@@ -36,7 +35,6 @@ const {
   addThread,
   addPost,
   addTracker,
-  getPosts,
   getThreadName,
 } = require("./model/db.js");
 
@@ -53,6 +51,7 @@ const {
 const { sendEmail } = require("./services/contact.js");
 const { loggedIn } = require("./services/login.js");
 const { getBadgeInfo } = require("./services/badges.js");
+const { getAndFormatThreads, getAndFormatPosts } = require("./services/discussions.js");
 
 // Serve static files in the public directory as /public/
 app.use("/public", express.static("public"));
@@ -97,18 +96,13 @@ app.route("/").get(loggedIn, async (req, res) => {
 });
 
 app.route("/profile/").get(loggedIn, async (req, res) => {
-  const {
-    firstname,
-    lastname,
-    studentid,
-  } = req.user;
-  
+  const { studentid } = req.user;
   const badgeInfo = await getBadgeInfo(studentid);
   const inProcessTracks = await getInProcessTracks(studentid); 
   const completedTracks = await getCompletedTracks(studentid);
    
   res.render(`${__dirname}/views/profile`, {
-    studentname: `${firstname} ${lastname}`,
+    studentname: `${req.user.firstname} ${req.user.lastname}`,
     inProcessTracks,
     completedTracks,
     ...badgeInfo,
@@ -135,183 +129,77 @@ app.route("/login/").post(
 );
 
 app.route("/contact/").get(loggedIn, (req, res) => {
-  const {
-    firstname,
-    lastname,
-    schoolname,
-    schooladdress,
-    schoolphone,
-  } = req.user;
   res.render(`${__dirname}/views/contact`, {
-    studentname: `${firstname} ${lastname}`,
-    schoolname,
-    schooladdress,
-    schoolphone,
+    studentname: `${req.user.firstname} ${req.user.lastname}`,
+    ...req.user,
   });
 });
 
 app.route("/discussions/").get(loggedIn, async (req, res) => {
-  const {
-    firstname,
-    lastname,
-    schoolname,
-    schooladdress,
-    schoolphone,
-  } = req.user;
-  const threads = await getThreads();
-  const asyncFormattedThreads = threads.map(async thread => {
-    const studentId = thread.studentid;
-    const student = await getUserById(studentId);
-    let unreadPostCount = await getUnreadPostCount(thread.threadid);
-    unreadPostCount = unreadPostCount[0].count;
-    let totalPostCount = await getTotalPosts(thread.threadid);
-    totalPostCount = totalPostCount[0].count;
-    return { ...thread, firstName: student.firstname, lastName: student.lastname, unreadPostCount, totalPostCount };
-  });
-  const formattedThreads = await Promise.all(asyncFormattedThreads); 
+  const formattedThreads = await getAndFormatThreads(); 
   res.render(`${__dirname}/views/discussions`, {
-    studentname: `${firstname} ${lastname}`,
-    schoolname,
-    schooladdress,
-    schoolphone,
+    studentname: `${req.user.firstname} ${req.user.lastname}`,
+    ...req.user,
     formattedThreads,
   });
 });
 
 app.route("/discussions/createthread").get(loggedIn, async (req, res) => {
-  const {
-    firstname,
-    lastname,
-    schoolname,
-    schooladdress,
-    schoolphone,
-  } = req.user;
-  const threads = await getThreads();
-  const asyncFormattedThreads = threads.map(async thread => {
-    const studentId = thread.studentid;
-    const student = await getUserById(studentId);
-    let unreadPostCount = await getUnreadPostCount(thread.threadid);
-    unreadPostCount = unreadPostCount[0].count;
-    let totalPostCount = await getTotalPosts(thread.threadid);
-    totalPostCount = totalPostCount[0].count;
-    return { ...thread, firstName: student.firstname, lastName: student.lastname, unreadPostCount, totalPostCount };
-  });
-  const formattedThreads = await Promise.all(asyncFormattedThreads); 
+  const formattedThreads = await getAndFormatThreads();
   res.render(`${__dirname}/views/createthread`, {
-    studentname: `${firstname} ${lastname}`,
-    schoolname,
-    schooladdress,
-    schoolphone,
+    studentname: `${req.user.firstname} ${req.user.lastname}`,
+    ...req.user,
     formattedThreads,
   });
 });
 
 app.route("/discussions/displaythread").get(loggedIn, async (req, res) => {
-  const {
-    firstname,
-    lastname,
-    schoolname,
-    schooladdress,
-    schoolphone,
-  } = req.user;
   const { threadId } = req.query;
-  const posts = await getPosts(threadId);
-  const asyncFormattedPosts = posts.map(async post => {
-    const studentId = post.studentid;
-    const student = await getUserById(studentId);
-    return { ...post, firstName: student.firstname, lastName: student.lastname, };
-  });
-  const formattedPosts = await Promise.all(asyncFormattedPosts);
+  const formattedPosts = await getAndFormatPosts(threadId);
   res.render(`${__dirname}/views/displaythread`, {
-    studentname: `${firstname} ${lastname}`,
-    schoolname,
-    schooladdress,
-    schoolphone,
+    studentname: `${req.user.firstname} ${req.user.lastname}`,
+    ...req.user,
     formattedPosts,
     threadId,
   });
 });
 
 app.route("/discussions/createpost").get(loggedIn, async (req, res) => {
-  const {
-    firstname,
-    lastname,
-    schoolname,
-    schooladdress,
-    schoolphone,
-  } = req.user;
   const { threadId } = req.query;
+  const formattedPosts = await getAndFormatPosts(threadId);
   const threadName = await getThreadName(threadId);
-  const posts = await getPosts(threadId);
-  const asyncFormattedPosts = posts.map(async post => {
-    const studentId = post.studentid;
-    const student = await getUserById(studentId);
-    return { ...post, firstName: student.firstname, lastName: student.lastname, };
-  });
-  const formattedPosts = await Promise.all(asyncFormattedPosts);
-  console.log(formattedPosts);
   res.render(`${__dirname}/views/createpost`, {
-    studentname: `${firstname} ${lastname}`,
-    schoolname,
-    schooladdress,
-    schoolphone,
+    studentname: `${req.user.firstname} ${req.user.lastname}`,
+    ...req.user,
     threadId,
-    formattedPosts,
     threadName,
+    formattedPosts,
   });
 
 })
 app.route("/leaders/").get(loggedIn, (req, res) => {
-  const {
-    firstname,
-    lastname,
-    schoolname,
-    schooladdress,
-    schoolphone,
-  } = req.user;
-
   res.render(`${__dirname}/views/leaders`, {
-    studentname: `${firstname} ${lastname}`,
-    schoolname,
-    schooladdress,
-    schoolphone,
+    studentname: `${req.user.firstname} ${req.user.lastname}`,
+    ...req.user,
   });
 });
 
 app.route("/learning/").get(loggedIn, async (req, res) => {
-  const {
-    firstname,
-    lastname,
-    schoolname,
-    schooladdress,
-    schoolphone,
-    studentid,
-  } = req.user;
+  const { studentid } = req.user;
   const inProcessTracks = await getInProcessTracks(studentid); 
   const completedTracks = await getCompletedTracks(studentid);
   res.render(`${__dirname}/views/learning`, {
-    studentname: `${firstname} ${lastname}`,
-    schoolname,
-    schooladdress,
-    schoolphone,
+    studentname: `${req.user.firstname} ${req.user.lastname}`,
+    ...req.user,
     inProcessTracks,
     completedTracks,
   });
 });
 
 app.route("/pretest/").get(loggedIn, (req, res) => {
-  const {
-    firstname,
-    lastname,
-    schoolname,
-    schooladdress,
-    schoolphone,
-  } = req.user;
   res.render(`${__dirname}/views/track1pre-test`, {
-    studentname: `${firstname} ${lastname}`,
-    schoolname,
-    schooladdress,
-    schoolphone,
+    studentname: `${req.user.firstname} ${req.user.lastname}`,
+    ...req.user,
   });
 
 })
@@ -406,9 +294,6 @@ app.route("/api/contact/").post(loggedIn, async (req, res) => {
     firstname,
     lastname,
     studentemail,
-    schoolname,
-    schooladdress,
-    schoolphone,
     teachername,
     teacheremail,
   } = req.user;
@@ -422,18 +307,13 @@ app.route("/api/contact/").post(loggedIn, async (req, res) => {
     res.render(`${__dirname}/views/contactresults`, {
       contactmessage: `Message sent to ${teachername} at ${teacheremail}.`,
       studentname: `${firstname} ${lastname}`,
-      schoolname,
-      schooladdress,
-      schoolphone,
+      ...req.user,
     });
   } else {
-    // TODO: confirm that we enter this else branch if the email fails
     res.render(`${__dirname}/views/contactresults`, {
       contactmessage: "Sorry, something went wrong. Please try again.",
       studentname: `${firstname} ${lastname}`,
-      schoolname,
-      schooladdress,
-      schoolphone,
+      ...req.user,
     });
   }
 });

@@ -236,8 +236,10 @@ function gradeQuestion(question) {
   return correctAnswer;
 }
 
-async function takePostTest(trackId, results) {
+async function takePostTest(trackId) {
   clearScreen();
+  const rawResults = await fetch(`/api?action=getresults&track=${trackId}`);
+  const results = await rawResults.json();
   const nextButton = document.querySelector(".nextButton");
   // nextButton.disabled = true;
   const subHeader = document.querySelector("h2");
