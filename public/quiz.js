@@ -1,5 +1,6 @@
 document.addEventListener("readystatechange", (e) => {
   if (e.target.readyState === "complete") {
+    loadOpenTracks("123456");
     const quizButtons = document
       .querySelectorAll(".startTrack")
       .forEach((button) => {
@@ -11,6 +12,21 @@ document.addEventListener("readystatechange", (e) => {
       });
   }
 });
+
+async function loadOpenTracks(studentid) {
+  // pull data for open tracks
+  console.log(studentid);
+  const data = await fetch(`/api?action=getopentracks`);
+  const formatted = await data.json();
+  console.log(formatted);
+  for (var key in formatted) 
+  {
+      const table = document.getElementById("tracksBody");
+      let tableRow = table.insertRow();
+      let tableUser = tableRow.insertCell(0);
+      tableUser.innerHTML = formatted[key].trackname;
+  }
+}
 
 async function startTrack(trackId, trackName) {
   // When the user starts a track, hide extra information
@@ -26,6 +42,7 @@ async function startTrack(trackId, trackName) {
   );
   let learningMaterials = await rawlearningMaterials.json();
   learningMaterials = learningMaterials[0];
+  console.log(results);
   // results takes the form:
   // { postscore: 0
   // practicescore1: 0
@@ -34,6 +51,8 @@ async function startTrack(trackId, trackName) {
   // pretestscore: 0
   // studentid: "123456"
   // trackid: 4 }
+  if (results.practicescore1 == null)
+    console.log("user doesn't have practicescore1");
   if (results.pretestscore === 0) {
     takePretest(trackId, learningMaterials, results);
   } else {
@@ -364,7 +383,7 @@ function displayQuestions(myQuestions) {
 function displayQuestion(myQuestion) {
   // variable to store the HTML output
   const output = [];
-  output.push("<h3>Test Your Knowledge!</h3>");
+  output.push("<br><h3>Test Your Knowledge!</h3><br>");
   const answers = [];
   for (let i = 0; i < 4; ++i) {
     const currentAnswer = `<label>

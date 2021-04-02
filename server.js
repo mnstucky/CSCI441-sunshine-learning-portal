@@ -37,6 +37,7 @@ const {
   addThread,
   addPost,
   addTracker,
+  getOpenTracks,
 } = require("./model/db.js");
 
 // Load other services
@@ -207,8 +208,10 @@ app.route("/learning/").get(loggedIn, async (req, res) => {
     schoolphone,
     studentid,
   } = req.user;
+
   const inProcessTracks = await getInProcessTracks(studentid); 
   const completedTracks = await getCompletedTracks(studentid);
+
   res.render(`${__dirname}/views/learning`, {
     studentname: `${firstname} ${lastname}`,
     schoolname,
@@ -316,6 +319,10 @@ app.route("/api/").get(loggedIn, async (req, res) => {
       const addtracker = await addTracker();
       res.json(addtracker);
       break;
+    case "getopentracks":
+        const opentracks = await getOpenTracks(studentid);
+        res.json(opentracks);
+        break;
     default:
       res.json({});
   }

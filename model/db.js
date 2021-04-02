@@ -157,7 +157,7 @@ async function getTestResults(userId, trackId) {
 
 async function getTop10(trackId) {
   //const text = "SELECT studentid, postscore FROM learning_results WHERE trackid = $1 ORDER BY postscore DESC LIMIT 10";
-  const text = "SELECT learning_results.studentid, learning_results.postscore, student_info.firstname, student_info.lastname FROM learning_results LEFT JOIN student_info ON learning_results.studentid = student_info.studentid WHERE trackid = $1 ORDER BY postscore DESC LIMIT 10";
+  const text = "SELECT learning_results.studentid, learning_results.postscore, student_info.firstname, student_info.lastname FROM learning_results LEFT JOIN student_info ON learning_results.studentid = student_info.studentid WHERE trackid = $1 ORDER BY postscore DESC, firstname, lastname LIMIT 10";
   const values = [trackId];
   try {
     const res = await pool.query(text, values);
@@ -266,6 +266,19 @@ async function addTracker(userId, threadId) {
   }
 }
 
+async function getOpenTracks(userId) {  
+  const text = "SELECT learning_tracks.trackid, learning_tracks.trackname, users.studentid FROM learning_tracks LEFT JOIN (SELECT learning_results.trackid, learning_results.studentid FROM learning_results WHERE learning_results.studentid = $1) users ON learning_tracks.trackid = users.trackid WHERE users.studentid IS NULL"; 
+
+  const values = [userId];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
+
 exports.pool = pool;
 exports.getUserById = getUserById;
 exports.getQuestionsByTrack = getQuestionsByTrack;
@@ -290,3 +303,4 @@ exports.getUnreadReplyCount = getUnreadReplyCount;
 exports.addThread = addThread;
 exports.addPost = addPost;
 exports.addTracker = addTracker;
+exports.getOpenTracks = getOpenTracks;
