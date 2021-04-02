@@ -35,6 +35,8 @@ const {
   addThread,
   addPost,
   addTracker,
+  getOpenTracks,
+  getPosts,
   getThreadName,
 } = require("./model/db.js");
 
@@ -188,6 +190,7 @@ app.route("/learning/").get(loggedIn, async (req, res) => {
   const { studentid } = req.user;
   const inProcessTracks = await getInProcessTracks(studentid); 
   const completedTracks = await getCompletedTracks(studentid);
+
   res.render(`${__dirname}/views/learning`, {
     studentname: `${req.user.firstname} ${req.user.lastname}`,
     ...req.user,
@@ -284,6 +287,10 @@ app.route("/api/").get(loggedIn, async (req, res) => {
       const addtracker = await addTracker();
       res.json(addtracker);
       break;
+    case "getopentracks":
+        const opentracks = await getOpenTracks(studentid);
+        res.json(opentracks);
+        break;
     default:
       res.json({});
   }
@@ -389,4 +396,4 @@ passport.deserializeUser(async (username, done) => {
 });
 
 // Start server
-app.listen(port, () => console.log(`App listening on port ${port}.`));
+app.listen(port, () => console.log(`App listening on port ${port}.`)); 
