@@ -41,7 +41,7 @@ async function startTrack(trackId, trackName) {
   if (results.pretestscore === 0) {
     takePretest(trackId, learningMaterials, results);
   } else {
-    displayFirstMaterials(learningMaterials, trackId, results);
+    displayFirstMaterials(trackId, learningMaterials, results);
   }
 }
 
