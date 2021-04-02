@@ -52,6 +52,7 @@ const {
 } = require("./services/learning.js");
 const { sendEmail } = require("./services/contact.js");
 const { loggedIn } = require("./services/login.js");
+const { getBadgeInfo } = require("./services/badges.js");
 
 // Serve static files in the public directory as /public/
 app.use("/public", express.static("public"));
@@ -100,34 +101,18 @@ app.route("/profile/").get(loggedIn, async (req, res) => {
     firstname,
     lastname,
     studentid,
-    studentemail,
-    teachername,
-    teacheremail,
-    schoolname,
-    schooladdress,
-    schoolphone,
   } = req.user;
   
-  const getbadges = await getBadges(studentid);
-  const badgeicon = getbadges[0]?.badgetype;
-  const badgetitle = getbadges[0]?.trackname;
-
+  const badgeInfo = await getBadgeInfo(studentid);
   const inProcessTracks = await getInProcessTracks(studentid); 
   const completedTracks = await getCompletedTracks(studentid);
    
   res.render(`${__dirname}/views/profile`, {
     studentname: `${firstname} ${lastname}`,
-    studentid,
-    studentemail,
-    teachername,
-    teacheremail,
-    schoolname,
-    schooladdress,
-    schoolphone,
-    badgeicon,
-    badgetitle,
     inProcessTracks,
     completedTracks,
+    ...badgeInfo,
+    ...req.user,
   });
 });
 
