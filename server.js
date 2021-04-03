@@ -293,7 +293,7 @@ app.route("/api/").get(loggedIn, async (req, res) => {
       res.json(opentracks);
       break;
     case "adduserToTrack":
-      const addTrack = await addUserToTrack(studentid, 2);
+      const addTrack = await addUserToTrack(studentid, track);
       res.json(addTrack);
       break;
     default:
