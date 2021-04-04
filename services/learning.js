@@ -98,7 +98,7 @@ async function getInProcessTracks(userId) {
   const userResults = await getAllTestResults(userId);
   const userTracks = [];
   for (const result of userResults) {
-    if (!result.postscore) {
+    if (!result.postscore && result.postscore !== 0) {
       const trackName = await getTrackName(result.trackid);
       userTracks.push({trackid: result.trackid, name: trackName});
     }
@@ -110,7 +110,7 @@ async function getCompletedTracks(userId) {
   const userResults = await getAllTestResults(userId);
   const userTracks = [];
   for (const result of userResults) {
-    if (result.postscore) {
+    if (result.postscore || result.postscore === 0) {
       const trackName = await getTrackName(result.trackid);
       userTracks.push({track: trackName,
         score: result.postscore});
