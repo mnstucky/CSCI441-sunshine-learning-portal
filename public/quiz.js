@@ -20,13 +20,13 @@ async function loadOpenTracks() {
   const data = await fetch(`/api?action=getopentracks`);
   const formatted = await data.json();
   console.log(formatted);
-  for (var key in formatted) {
+  for (const track of formatted) {
     const table = document.getElementById("tracksBody");
     let tableRow = table.insertRow();
     let tableUser = tableRow.insertCell(0);
-    tableUser.innerHTML = formatted[key].trackname;
+    tableUser.innerHTML = track.trackname;
     tableRow.addEventListener("click", function() {
-      subscribeUserToTrack(formatted[key].trackid);
+      subscribeUserToTrack(track.trackid);
     });
   }
 }
@@ -35,9 +35,6 @@ async function subscribeUserToTrack(trackid){
   console.log(trackid);
   if (confirm("Would you like to subscribe to the selected track?")) {
     const data = await fetch(`/api?action=adduserToTrack&track=${trackid}`);
-    let studentid = '123456';
-    let track = trackid;
-    //const data = await fetch(`/api?action=adduserToTrack&studentid=${studentid}&trackid=${track}`);
     location.reload();
   } else {
       // do nothing
