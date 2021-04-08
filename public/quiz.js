@@ -26,21 +26,20 @@ async function loadOpenTracks() {
     let tableUser = tableRow.insertCell(0);
     tableUser.innerHTML = track.trackname;
     tableRow.addEventListener("click", function() {
-      subscribeUserToTrack(track.trackid);
+      subscribeUserToTrack(track.trackid, track.trackname);
     });
   }
 }
 
-async function subscribeUserToTrack(trackid){
+async function subscribeUserToTrack(trackid, trackname){
   console.log(trackid);
-  if (confirm("Would you like to subscribe to the selected track?")) {
+  if (confirm(`Would you like to subscribe to the ${trackname} track?`)) {
     const data = await fetch(`/api?action=adduserToTrack&track=${trackid}`);
     location.reload();
   } else {
       // do nothing
   }
 }
-
 
 async function startTrack(trackId, trackName) {
   // When the user starts a track, hide extra information
