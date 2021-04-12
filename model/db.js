@@ -302,6 +302,17 @@ async function getThreadName(threadId) {
   }
 }
 
+async function getWordDefinition(word) {
+  const text = "SELECT definitionpopup FROM popups WHERE defineword = $1";
+  const values = [word];
+  try {
+    const res = await pool.query(text, values);
+    return res.rows[0].definitionpopup;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
 exports.pool = pool;
 exports.getUserById = getUserById;
 exports.getQuestionsByTrack = getQuestionsByTrack;
@@ -329,3 +340,4 @@ exports.addTracker = addTracker;
 exports.getOpenTracks = getOpenTracks;
 exports.getPosts = getPosts;
 exports.getThreadName = getThreadName;
+exports.getWordDefinition = getWordDefinition;

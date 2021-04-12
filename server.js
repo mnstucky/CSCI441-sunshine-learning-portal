@@ -36,9 +36,9 @@ const {
   addPost,
   addTracker,
   getOpenTracks,
-  getPosts,
   getThreadName,
   addUserToTrack,
+  getWordDefinition,
 } = require("./model/db.js");
 
 // Load other services
@@ -215,7 +215,7 @@ app.route("/logout/").get((req, res) => {
 // Define API routes
 
 app.route("/api/").get(loggedIn, async (req, res) => {
-  const { action, num, track, id, threadid } = req.query;
+  const { action, num, track, id, threadid, word } = req.query;
   const { studentid } = req.user;
   switch (action) {
     case "getquestions":
@@ -295,6 +295,10 @@ app.route("/api/").get(loggedIn, async (req, res) => {
     case "adduserToTrack":
       const addTrack = await addUserToTrack(studentid, track);
       res.json(addTrack);
+      break;
+    case "getpopup":
+      const definition = await getWordDefinition(word);
+      res.json(definition); 
       break;
     default:
       res.json({});
