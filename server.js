@@ -54,7 +54,10 @@ const {
 const { sendEmail } = require("./services/contact.js");
 const { loggedIn } = require("./services/login.js");
 const { getBadgeInfo } = require("./services/badges.js");
-const { getAndFormatThreads, getAndFormatPosts } = require("./services/discussions.js");
+const {
+  getAndFormatThreads,
+  getAndFormatPosts,
+} = require("./services/discussions.js");
 
 // Serve static files in the public directory as /public/
 app.use("/public", express.static("public"));
@@ -101,9 +104,9 @@ app.route("/").get(loggedIn, async (req, res) => {
 app.route("/profile/").get(loggedIn, async (req, res) => {
   const { studentid } = req.user;
   const badgeInfo = await getBadgeInfo(studentid);
-  const inProcessTracks = await getInProcessTracks(studentid); 
+  const inProcessTracks = await getInProcessTracks(studentid);
   const completedTracks = await getCompletedTracks(studentid);
-   
+
   res.render(`${__dirname}/views/profile`, {
     studentname: `${req.user.firstname} ${req.user.lastname}`,
     inProcessTracks,
@@ -139,7 +142,7 @@ app.route("/contact/").get(loggedIn, (req, res) => {
 });
 
 app.route("/discussions/").get(loggedIn, async (req, res) => {
-  const formattedThreads = await getAndFormatThreads(); 
+  const formattedThreads = await getAndFormatThreads();
   res.render(`${__dirname}/views/discussions`, {
     studentname: `${req.user.firstname} ${req.user.lastname}`,
     ...req.user,
@@ -178,8 +181,7 @@ app.route("/discussions/createpost").get(loggedIn, async (req, res) => {
     threadName,
     formattedPosts,
   });
-
-})
+});
 app.route("/leaders/").get(loggedIn, (req, res) => {
   res.render(`${__dirname}/views/leaders`, {
     studentname: `${req.user.firstname} ${req.user.lastname}`,
@@ -189,7 +191,7 @@ app.route("/leaders/").get(loggedIn, (req, res) => {
 
 app.route("/learning/").get(loggedIn, async (req, res) => {
   const { studentid } = req.user;
-  const inProcessTracks = await getInProcessTracks(studentid); 
+  const inProcessTracks = await getInProcessTracks(studentid);
   const completedTracks = await getCompletedTracks(studentid);
 
   res.render(`${__dirname}/views/learning`, {
@@ -205,8 +207,7 @@ app.route("/pretest/").get(loggedIn, (req, res) => {
     studentname: `${req.user.firstname} ${req.user.lastname}`,
     ...req.user,
   });
-
-})
+});
 app.route("/logout/").get((req, res) => {
   req.logout();
   res.redirect("/");
@@ -271,19 +272,19 @@ app.route("/api/").get(loggedIn, async (req, res) => {
     case "getUnreadPostCount":
       const unreadcount = await getUnreadPostCount(threadid);
       res.json(unreadcount);
-      break;    
+      break;
     case "getUnreadReplyCount":
       const unreadreplycount = await getUnreadReplyCount();
       res.json(unreadreplycount);
-      break;    
+      break;
     case "addThread":
       const addthread = await addThread();
       res.json(addthread);
-      break;    
+      break;
     case "addPost":
       const addpost = await addPost();
       res.json(addpost);
-      break;    
+      break;
     case "addTracker":
       const addtracker = await addTracker();
       res.json(addtracker);
@@ -298,7 +299,7 @@ app.route("/api/").get(loggedIn, async (req, res) => {
       break;
     case "getpopup":
       const definition = await getWordDefinition(word);
-      res.json(definition); 
+      res.json(definition);
       break;
     default:
       res.json({});
@@ -358,8 +359,17 @@ app.route("/api/createpost/").post(loggedIn, async (req, res) => {
 
 app.route("/api/results/").put(loggedIn, async (req, res) => {
   const { trackid, test, score } = req.body;
-  const { studentid } = req.user;
+  const { studentid, studentemail, teacheremail } = req.user;
+  const studentname = `${req.user.firstname} ${req.user.lastname}`;
   const success = await submitResult(studentid, trackid, test, score);
+  if (test === "postscore") {
+    sendEmail(
+      studentemail,
+      teacheremail,
+      `Test Results for Track ${trackid}`,
+      `${studentname} got ${score} correct on the post test.`
+    );
+  }
   if (success) {
     // If new resource created
     res.sendStatus(201);
@@ -405,4 +415,4 @@ passport.deserializeUser(async (username, done) => {
 });
 
 // Start server
-app.listen(port, () => console.log(`App listening on port ${port}.`)); 
+app.listen(port, () => console.log(`App listening on port ${port}.`));

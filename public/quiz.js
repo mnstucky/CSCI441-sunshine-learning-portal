@@ -1,4 +1,3 @@
-//const { addUserToTrack } = require("../model/db");
 
 document.addEventListener("readystatechange", (e) => {
   if (e.target.readyState === "complete") {
