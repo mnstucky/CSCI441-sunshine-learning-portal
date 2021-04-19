@@ -45,17 +45,17 @@ describe("learning track functionality", function () {
   });
   it("a subscribed user should be reflected in the database", (done) => {
     agent.get("/api?action=getusertracks").end((err, res) => {
-      expect(res.body).to.include(3);
+      expect(res.body[0].trackid).to.equal(3);
       done();
     });
   });
-  it("a subscribed user should have zero scores", (done) => {
+  it("a subscribed user should have null scores", (done) => {
     agent.get("/api?action=getresults&track=3").end((err, res) => {
-      expect(res.body.pretestscore).to.equal(0);
-      expect(res.body.practicescore1).to.equal(0);
-      expect(res.body.practicescore2).to.equal(0);
-      expect(res.body.practicescore3).to.equal(0);
-      expect(res.body.postscore).to.equal(0);
+      expect(res.body.pretestscore).to.equal(null);
+      expect(res.body.practicescore1).to.equal(null);
+      expect(res.body.practicescore2).to.equal(null);
+      expect(res.body.practicescore3).to.equal(null);
+      expect(res.body.postscore).to.equal(null);
       done();
     });
   });
@@ -82,10 +82,10 @@ describe("learning track functionality", function () {
   it("a user's post should be reflected in the database", (done) => {
     agent.get("/api?action=getresults&track=3").end((err, res) => {
       expect(res.body.pretestscore).to.equal(5);
-      expect(res.body.practicescore1).to.equal(0);
-      expect(res.body.practicescore2).to.equal(0);
-      expect(res.body.practicescore3).to.equal(0);
-      expect(res.body.postscore).to.equal(0);
+      expect(res.body.practicescore1).to.equal(null);
+      expect(res.body.practicescore2).to.equal(null);
+      expect(res.body.practicescore3).to.equal(null);
+      expect(res.body.postscore).to.equal(null);
       done();
     });
   });
