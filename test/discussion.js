@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { addTestUser, deleteTestUser } = require("../model/test.js");
+const { addTestUser, deleteTestUser, deleteTestThreads } = require("../model/test.js");
 
 const chai = require("chai");
 const expect = chai.expect;
@@ -46,5 +46,7 @@ describe("discussion board functionality", function () {
   after(async () => {
     // Delete dummy account after testing
     await deleteTestUser();
+    // Delete dummy threads after testing
+    await deleteTestThreads();
   });
 });

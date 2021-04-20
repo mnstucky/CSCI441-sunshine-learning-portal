@@ -11,6 +11,7 @@ async function getAndFormatThreads() {
   const asyncFormattedThreads = threads.map(async (thread) => {
     const studentId = thread.studentid;
     const student = await getUserById(studentId);
+    console.log(student);
     let unreadPostCount = await getUnreadPostCount(thread.threadid);
     unreadPostCount = unreadPostCount[0].count;
     let totalPostCount = await getTotalPosts(thread.threadid);

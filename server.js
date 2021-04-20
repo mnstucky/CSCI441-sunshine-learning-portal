@@ -277,18 +277,6 @@ app.route("/api/").get(loggedIn, async (req, res) => {
       const unreadreplycount = await getUnreadReplyCount();
       res.json(unreadreplycount);
       break;
-    case "addThread":
-      const addthread = await addThread();
-      res.json(addthread);
-      break;
-    case "addPost":
-      const addpost = await addPost();
-      res.json(addpost);
-      break;
-    case "addTracker":
-      const addtracker = await addTracker();
-      res.json(addtracker);
-      break;
     case "getopentracks":
       const opentracks = await getOpenTracks(studentid);
       res.json(opentracks);

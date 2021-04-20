@@ -20,5 +20,15 @@ async function deleteTestUser() {
   }
 }
 
+async function deleteTestThreads() {
+  const text = "DELETE FROM discussion_thread WHERE studentid = '999999'";
+  try {
+    const res = await pool.query(text);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 exports.addTestUser = addTestUser;
 exports.deleteTestUser = deleteTestUser;
+exports.deleteTestThreads = deleteTestThreads;
