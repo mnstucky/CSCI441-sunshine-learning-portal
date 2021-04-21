@@ -197,7 +197,7 @@ function gradeQuestion(question) {
       if (correctAnswerLetter === possibleAnswerLetter) {
         if (radioButton.checked) {
           correctAnswer = true;
-          possibleAnswer.style.color = "lightgreen";
+          possibleAnswer.style.color = "darkgreen";
         } else {
           possibleAnswer.style.color = "red";
         }
@@ -253,7 +253,7 @@ function gradeTest(myQuestions) {
       if (correctAnswerLetter === possibleAnswerLetter) {
         if (radioButton.checked) {
           numCorrect += 1;
-          possibleAnswer.style.color = "lightgreen";
+          possibleAnswer.style.color = "darkgreen";
         } else {
           possibleAnswer.style.color = "red";
         }

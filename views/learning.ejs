@@ -19,7 +19,7 @@
       <div id="defaultDisplay">
 
         <!-- In-Process Learning Track -->
-        <div class="row border border-dark my-2 py-2">
+        <div class="row border border-dark my-2 py-2 row1">
           <h4 id="centerText">My In-Process Learning Tracks</h4>
           <div class="col-sm">
           <% for (const track of inProcessTracks) { %> 
@@ -29,19 +29,21 @@
         </div>  
 
         <!-- Available Learning Tracks -->
-        <div class="row border border-dark my-2 py-2">
+        <div class="row border border-dark my-2 py-2 row1">
           <h4 id="centerText">Available Learning Tracks</h4>
           <div class="col-sm">
             <table id="openTracks">
               <tbody id="tracksBody">
-                <td id="openTrackName"></td>
+                <td>
+                  
+                </td>
               </tbody>
             </table>
           </div>
         </div>
 
         <!-- Completed Learning Tracks -->
-        <div class="row border border-dark my-2">
+        <div class="row border border-dark my-2 row1">
           <h4 id="centerText">My Completed Learning Tracks</h4>
           <div class="col-sm">
           <% for (const result of completedTracks) { %>
@@ -51,7 +53,7 @@
         </div>
 
         <!-- Assessments -->
-        <div class="row border border-dark my-2">
+        <div class="row border border-dark my-2 row1">
           <h4 id="centerText">My Assessment Results</h4>
           <div class="col-sm">
             <% for (const result of completedTracks) { %>
@@ -61,7 +63,7 @@
         </div>
 
         <!-- Additional Resources -->
-        <div class="row border border-dark my-2">
+        <div class="row border border-dark my-2 row1">
           <h4 id="centerText">Additional Resources</h4>
           <div class="col-sm">
             <p class="row mx-1"><a href="https://www.khanacademy.org/math/cc-fifth-grade-math">Khan Academy</a></p>

@@ -1,5 +1,12 @@
 /* Use this stylesheet for custom CSS */
 
+body{
+    background-color: #f0c929;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #645c4d;
+}
+
 #centerText {
     text-align: center;}
 
@@ -17,6 +24,7 @@
     border: 1px solid black;
     padding: 5px;
     width: 80%;
+    background-color: #fbe6c2;
 }
 
 #leaderName {
@@ -35,3 +43,14 @@
     border: 1px solid black;
     padding: 5px;
 }
+
+.container-fluid {
+    background-color: #f48b29;
+    color: #fbe6c2;
+}
+.row1 {
+    background-color: #fbe6c2;
+}
+input[type="radio"]{
+    margin: 0 10px 0 10px;
+  }
