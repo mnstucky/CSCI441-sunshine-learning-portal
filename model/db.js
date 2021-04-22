@@ -313,6 +313,16 @@ async function getWordDefinition(word) {
   }
 }
 
+async function getDefinedWords() {
+  const text = "SELECT defineword FROM popups";
+  try {
+    const res = await pool.query(text);
+    return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
 exports.pool = pool;
 exports.getUserById = getUserById;
 exports.getQuestionsByTrack = getQuestionsByTrack;
@@ -341,3 +351,4 @@ exports.getOpenTracks = getOpenTracks;
 exports.getPosts = getPosts;
 exports.getThreadName = getThreadName;
 exports.getWordDefinition = getWordDefinition;
+exports.getDefinedWords = getDefinedWords;

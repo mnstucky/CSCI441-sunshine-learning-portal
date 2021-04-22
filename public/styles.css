@@ -54,3 +54,8 @@ body{
 input[type="radio"]{
     margin: 0 10px 0 10px;
   }
+
+.definition {
+    font-weight: bold;
+    color: #645c4d;
+}

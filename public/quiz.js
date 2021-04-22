@@ -197,7 +197,7 @@ function gradeQuestion(question) {
       if (correctAnswerLetter === possibleAnswerLetter) {
         if (radioButton.checked) {
           correctAnswer = true;
-          possibleAnswer.style.color = "darkgreen";
+          possibleAnswer.style.color = "lightgreen";
         } else {
           possibleAnswer.style.color = "red";
         }
@@ -223,9 +223,47 @@ async function sendScoreToDatabase(trackid, test, score) {
   });
 }
 
-function displayMaterials(material, learningMaterials) {
+async function displayMaterials(material, learningMaterials) {
   const materialsContainer = document.getElementById("materials");
-  materialsContainer.innerHTML = learningMaterials[material];
+ 
+  if (material==="learningtext"){
+  
+    //get words with definitions from db
+    const wordData = await fetch(`/api?action=getDefinedWords`);
+    const definedWords = await wordData.json();
+    console.log(JSON.stringify(definedWords));
+
+    //search for each defined word within learning text
+    var displayText = "";
+    //for (const word of definedWords) {
+    var word = "divisor";
+    var splitArray = learningMaterials[material].split(word);
+
+    //if defined word is found, get definition and add tooltip
+    if (splitArray.length > 1) {
+
+      //retrieve definition
+      const defData = await fetch(`/api?action=getpopup&word=${word}`);
+      //const definition = await defData.json();
+      var definition = "A divisor is the number we divide by. In the equation 12 ÷ 3 = 4, 3 is the divisor.";
+
+      var tooltip = `<a href=\"#\" class=\"definition\" title=\"${definition}\" data-placement=\"top\" data-toggle=\"tooltip\">${word}</a>`;
+
+      //add tooltips where needed
+      for (let i = 0; i < splitArray.length; i++) {
+        if (i == splitArray.length - 1){
+          displayText += splitArray[i];
+        } else {
+          displayText += splitArray[i] + tooltip;
+        }
+      }
+    }
+
+    materialsContainer.innerHTML = displayText;
+    $(function(){ $(".definition").tooltip(); });
+  } else {
+    materialsContainer.innerHTML = learningMaterials[material];
+  }
 }
 
 function enableNextButton(callback, learningMaterials, trackId, results) {
@@ -253,7 +291,7 @@ function gradeTest(myQuestions) {
       if (correctAnswerLetter === possibleAnswerLetter) {
         if (radioButton.checked) {
           numCorrect += 1;
-          possibleAnswer.style.color = "darkgreen";
+          possibleAnswer.style.color = "lightgreen";
         } else {
           possibleAnswer.style.color = "red";
         }

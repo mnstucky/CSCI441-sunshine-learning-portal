@@ -39,6 +39,7 @@ const {
   getThreadName,
   addUserToTrack,
   getWordDefinition,
+  getDefinedWords,
 } = require("./model/db.js");
 
 // Load other services
@@ -288,6 +289,11 @@ app.route("/api/").get(loggedIn, async (req, res) => {
     case "getpopup":
       const definition = await getWordDefinition(word);
       res.json(definition);
+      console.log(word + definition);
+      break;
+    case "getDefinedWords":
+      const definedWords = await getDefinedWords();
+      res.json(definedWords);
       break;
     default:
       res.json({});
