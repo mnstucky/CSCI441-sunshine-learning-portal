@@ -238,13 +238,16 @@ async function displayMaterials(material, learningMaterials) {
 
     const promiseOfFormattedWordsToDisplay = wordsToDisplay.map(async word => {
       const lowercaseWord = word.toLowerCase();
-
+      let storedDefinedWord;
       // If the current word is defined, insert tooltip
       if (definedWords.find(definedWord => {
         const patternToMatch = new RegExp(`.*${definedWord}.*`, "g");
+        if (lowercaseWord.match(patternToMatch)) {
+          storedDefinedWord = definedWord;
+        }
         return lowercaseWord.match(patternToMatch);
       })) {
-        const defData = await fetch(`/api?action=getpopup&word=${word}`);
+        const defData = await fetch(`/api?action=getpopup&word=${storedDefinedWord}`);
         const definition = await defData.json();
         // Nest the tooltip in a figcaption to enable hiding/revealing with CSS
         return `<div class="customtooltip">${word}<span class="customtooltipcontent">${definition}</span></div>`;
@@ -257,6 +260,8 @@ async function displayMaterials(material, learningMaterials) {
     const formattedWordsToDisplay = await Promise.all(promiseOfFormattedWordsToDisplay);
     materialsContainer.innerHTML = formattedWordsToDisplay.join(" ");
     
+  } else {
+    materialsContainer.innerHTML = learningMaterials[material];
   }
 }
 

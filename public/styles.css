@@ -85,4 +85,5 @@ input[type="radio"]{
     background-color: #fbe6c2;
     border-radius: .5rem;
     padding: 1rem;
+    z-index: 1000;
 }
