@@ -59,3 +59,30 @@ input[type="radio"]{
     font-weight: bold;
     color: #645c4d;
 }
+
+.customtooltip {
+    display: inline-block;
+    text-decoration: underline;
+    position: relative;
+    cursor: help;
+}
+
+.customtooltip:hover .customtooltipcontent {
+    visibility: visible;
+    opacity: 1;
+}
+
+.customtooltipcontent {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+    position: absolute;
+    width: 300px;
+    top: 100%;
+    left: 50%;
+    margin-left: -150px;
+    text-decoration: unset;
+    background-color: #fbe6c2;
+    border-radius: .5rem;
+    padding: 1rem;
+}

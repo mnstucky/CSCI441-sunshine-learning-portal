@@ -289,7 +289,6 @@ app.route("/api/").get(loggedIn, async (req, res) => {
     case "getpopup":
       const definition = await getWordDefinition(word);
       res.json(definition);
-      console.log(word + definition);
       break;
     case "getDefinedWords":
       const definedWords = await getDefinedWords();

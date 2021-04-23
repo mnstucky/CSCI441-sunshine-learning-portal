@@ -228,41 +228,35 @@ async function displayMaterials(material, learningMaterials) {
  
   if (material==="learningtext"){
   
-    //get words with definitions from db
     const wordData = await fetch(`/api?action=getDefinedWords`);
-    const definedWords = await wordData.json();
-    console.log(JSON.stringify(definedWords));
+    const definedWordObjects = await wordData.json();
+    const definedWords = definedWordObjects.map(object => object.defineword);
+    
+    const wordsToDisplay = learningMaterials[material].split(" ");
 
-    //search for each defined word within learning text
-    var displayText = "";
-    //for (const word of definedWords) {
-    var word = "divisor";
-    var splitArray = learningMaterials[material].split(word);
+    // Iterate through the words to display, looking for defined words
 
-    //if defined word is found, get definition and add tooltip
-    if (splitArray.length > 1) {
+    const promiseOfFormattedWordsToDisplay = wordsToDisplay.map(async word => {
+      const lowercaseWord = word.toLowerCase();
 
-      //retrieve definition
-      const defData = await fetch(`/api?action=getpopup&word=${word}`);
-      //const definition = await defData.json();
-      var definition = "A divisor is the number we divide by. In the equation 12 ÷ 3 = 4, 3 is the divisor.";
-
-      var tooltip = `<a href=\"#\" class=\"definition\" title=\"${definition}\" data-placement=\"top\" data-toggle=\"tooltip\">${word}</a>`;
-
-      //add tooltips where needed
-      for (let i = 0; i < splitArray.length; i++) {
-        if (i == splitArray.length - 1){
-          displayText += splitArray[i];
-        } else {
-          displayText += splitArray[i] + tooltip;
-        }
+      // If the current word is defined, insert tooltip
+      if (definedWords.find(definedWord => {
+        const patternToMatch = new RegExp(`.*${definedWord}.*`, "g");
+        return lowercaseWord.match(patternToMatch);
+      })) {
+        const defData = await fetch(`/api?action=getpopup&word=${word}`);
+        const definition = await defData.json();
+        // Nest the tooltip in a figcaption to enable hiding/revealing with CSS
+        return `<div class="customtooltip">${word}<span class="customtooltipcontent">${definition}</span></div>`;
+      // Otherwise, keep the current word
+      } else {
+        return word;
       }
-    }
+    });
 
-    materialsContainer.innerHTML = displayText;
-    $(function(){ $(".definition").tooltip(); });
-  } else {
-    materialsContainer.innerHTML = learningMaterials[material];
+    const formattedWordsToDisplay = await Promise.all(promiseOfFormattedWordsToDisplay);
+    materialsContainer.innerHTML = formattedWordsToDisplay.join(" ");
+    
   }
 }
 
