@@ -34,6 +34,8 @@ const {
   getUnreadReplyCount,
   addThread,
   addPost,
+  deletePost,
+  deleteThread,
   addTracker,
   getOpenTracks,
   getThreadName,
@@ -160,6 +162,13 @@ app.route("/discussions/createthread").get(loggedIn, async (req, res) => {
   });
 });
 
+app.route("/discussions/removethread").post(loggedIn, async (req, res) => {
+  const { studentid } = req.user;
+  const threadid = req.body.threadid;
+  const deleted = await deleteThread(studentid, threadid);
+  res.redirect(`/discussions`);
+});
+
 app.route("/discussions/displaythread").get(loggedIn, async (req, res) => {
   const { threadId } = req.query;
   const formattedPosts = await getAndFormatPosts(threadId);
@@ -183,6 +192,15 @@ app.route("/discussions/createpost").get(loggedIn, async (req, res) => {
     formattedPosts,
   });
 });
+
+app.route("/discussions/removepost").post(loggedIn, async (req, res) => {
+  const { studentid } = req.user;
+  const postid = req.body.postid;
+  const threadid = req.body.threadid;
+  const deleted = await deletePost(studentid, postid);
+  res.redirect(`/discussions/displaythread?threadId=${threadid}`);
+});
+
 app.route("/leaders/").get(loggedIn, (req, res) => {
   res.render(`${__dirname}/views/leaders`, {
     studentname: `${req.user.firstname} ${req.user.lastname}`,

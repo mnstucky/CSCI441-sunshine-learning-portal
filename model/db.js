@@ -199,6 +199,17 @@ async function getThreads() {
   }
 }
 
+async function deleteThread(userId, threadId) {
+  const text = "DELETE FROM discussion_thread WHERE studentid = $1 AND threadid = $2";
+  const values = [userId, threadId];
+  try {
+    const res = await pool.query(text, values);
+    console.log(`User ${userId} removed thread ${threadId}`);
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
 async function getTotalPosts(threadid) {
   const text = "SELECT count(*) FROM discussion_post WHERE threadid = $1";
   const values = [threadid];
@@ -216,6 +227,17 @@ async function getPosts(threadid) {
   try {
     const res = await pool.query(text, values);
     return res.rows;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
+async function deletePost(userId, postId) {
+  const text = "DELETE FROM discussion_post WHERE studentid = $1 AND postid = $2";
+  const values = [userId, postId];
+  try {
+    const res = await pool.query(text, values);
+    console.log(`User ${userId} removed post ${postId}`);
   } catch (err) {
     console.error(err.stack);
   }
@@ -346,6 +368,8 @@ exports.getUnreadPostCount = getUnreadPostCount;
 exports.getUnreadReplyCount = getUnreadReplyCount;
 exports.addThread = addThread;
 exports.addPost = addPost;
+exports.deletePost = deletePost;
+exports.deleteThread = deleteThread;
 exports.addTracker = addTracker;
 exports.getOpenTracks = getOpenTracks;
 exports.getPosts = getPosts;
