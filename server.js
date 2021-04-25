@@ -112,7 +112,7 @@ app.route("/profile/").get(loggedIn, async (req, res) => {
     studentname: `${req.user.firstname} ${req.user.lastname}`,
     inProcessTracks,
     completedTracks,
-    ...badgeInfo,
+    badgeInfo,
     ...req.user,
   });
 });

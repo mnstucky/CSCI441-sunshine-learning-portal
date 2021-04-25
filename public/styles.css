@@ -87,3 +87,17 @@ input[type="radio"]{
     padding: 1rem;
     z-index: 1000;
 }
+
+.badges {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row; 
+    width: 100%; 
+    text-align: center;
+    min-height: 100px;
+}
+
+.badges > div {
+    margin: 0px 20px 0px 20px;
+}
