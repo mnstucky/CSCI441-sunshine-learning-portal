@@ -235,7 +235,7 @@ app.route("/logout/").get((req, res) => {
 // Define API routes
 
 app.route("/api/").get(loggedIn, async (req, res) => {
-  const { action, num, track, id, threadid, word, } = req.query;
+  const { action, num, track, id, threadid, word } = req.query;
   const { studentid } = req.user;
   switch (action) {
     case "getquestions":
@@ -352,6 +352,17 @@ app.route("/api/createthread/").post(loggedIn, async (req, res) => {
   const data = await addThread(studentid, title);
   if (data) {
     res.redirect("/discussions/");
+  } else {
+    res.sendStatus(412);
+  }
+});
+
+app.route("/api/createpost/").post(loggedIn, async (req, res) => {
+  const { studentid } = req.user;
+  const { posttext, threadid } = req.body;
+  const data = await addPost(studentid, threadid, posttext);
+  if (data) {
+    res.redirect(`/discussions/displaythread?threadId=${threadid}`);
   } else {
     res.sendStatus(412);
   }
