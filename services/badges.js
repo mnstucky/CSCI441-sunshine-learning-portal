@@ -9,7 +9,7 @@ async function getBadgeInfo(studentid) {
       badgetitle: badge.trackname});
   }
   
-  console.log(badgeResults);
+  //console.log(badgeResults);
   return badgeResults;
 }
 
