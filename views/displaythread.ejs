@@ -24,6 +24,7 @@
                     <th scope="col">Date</th>
                     <th scope="col">Author</th>
                     <th scope="col">Content</th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody 
@@ -32,6 +33,11 @@
                         <td><%= post.createdtime.toDateString() %></td>
                         <td><%= `${post.firstName} ${post.lastName}` %></td>
                         <td><%= post.content %></td>
+                        <td><form action="/discussions/removepost" method="POST">
+                          <input type="hidden" id="postid" name="postid" value=<%= post.postid %>>
+                          <input type="hidden" id="threadid" name="threadid" value=<%= post.threadid %>>
+                          <input type="submit" class="btn btn-secondary btn-sm" value="Delete"/>
+                        </form></td>
                     </tr>
                 <% } %>
             </tbody>
