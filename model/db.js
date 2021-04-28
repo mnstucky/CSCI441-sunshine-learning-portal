@@ -178,6 +178,19 @@ async function getBadges(userId) {
   }
 }
 
+async function putBadge(userId, trackId, trackName, score, badgeImage) {
+  const text = "INSERT INTO badges VALUES ((select max(badgeid)+1 from badges), $1, $2, $3, $4, $5)";
+  const values = [userId, trackId, trackName, score, badgeImage];
+  try {
+    const res = await pool.query(text, values);
+    console.log("Badge created");
+    console.log(values);
+    return res;
+  } catch (err) {
+    console.error(err.stack);
+  }
+}
+
 async function getAllTestResults(userId) {
   const text = "SELECT * FROM learning_results WHERE studentid = $1";
   const values = [userId];
@@ -361,6 +374,7 @@ exports.addTestResult = addTestResult;
 exports.getTestResults = getTestResults;
 exports.getTop10 = getTop10;
 exports.getBadges = getBadges;
+exports.putBadge = putBadge;
 exports.getAllTestResults = getAllTestResults;
 exports.getThreads = getThreads;
 exports.getTotalPosts = getTotalPosts;

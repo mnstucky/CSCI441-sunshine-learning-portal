@@ -10,6 +10,10 @@ const {
   getTrackName,
 } = require("../model/db");
 
+const {
+  addBadge
+} = require("./badges");
+
 function selectRandomQuestions(questions, num) {
   if (questions.length < num) {
     num = questions.length;
@@ -88,6 +92,11 @@ async function submitResult(userId, trackId, test, score) {
   const priorScore = priorScores[test];
   if (!priorScore) {
     await addTestResult(userId, trackId, test, score);
+    
+    // check for postest score to earn a badge
+    if (test == 'postscore' && score >= 3) {
+      await addBadge(userId, trackId, score);
+    }
     return true;
   } else {
     return false;
