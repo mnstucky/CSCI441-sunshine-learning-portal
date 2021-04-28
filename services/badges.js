@@ -13,8 +13,6 @@ async function getBadgeInfo(studentid) {
   return badgeResults;
 }
 
-
-// RICK adding badge code
 async function addBadge(studentId, trackId, score) {
 
   let trackName = "";
