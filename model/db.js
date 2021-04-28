@@ -184,7 +184,6 @@ async function putBadge(userId, trackId, trackName, score, badgeImage) {
   try {
     const res = await pool.query(text, values);
     console.log("Badge created");
-    console.log(values);
     return res;
   } catch (err) {
     console.error(err.stack);
