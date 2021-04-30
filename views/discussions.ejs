@@ -25,7 +25,6 @@
                     <th scope="col">Thread</th>
                     <th scope="col">Author</th>
                     <th scope="col">Status</th>
-                    <th scope="col">Unread Posts</th>
                     <th scope="col">Total Posts</th>
                     <th></th>
                 </tr>
@@ -37,7 +36,6 @@
                   <td><a href=<%=`/discussions/displaythread?threadId=${thread.threadid}`%>><%= thread.title %></a></td>
                   <td><%= `${thread.firstName} ${thread.lastName}` %> </td>
                   <td><%= `${thread.status.charAt(0).toUpperCase()}${thread.status.slice(1)}` %> </td>
-                  <td><%= thread.unreadPostCount %> </td>
                   <td><%= thread.totalPostCount %> </td>
                   <td><form action="/discussions/removethread" method="POST">
                     <input type="hidden" id="threadid" name="threadid" value=<%= thread.threadid %>>
